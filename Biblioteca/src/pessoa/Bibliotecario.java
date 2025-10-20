@@ -6,4 +6,6 @@ public class Bibliotecario extends Pessoa {
         super(nome, cpf); // chama o construtor da classe pessoa.Pessoa
     }
 
+    //funções adicionar livro etc etc etc
+
 }
