@@ -1,27 +1,43 @@
 package pessoa;
 
-public class Pessoa {
-    //atributos
+public abstract class Pessoa {
+    private int id;
     private String nome;
-    private String cpf;
 
-    //construtor
-    public Pessoa(String nome, String cpf) {
+    public Pessoa(){} // construtor padrão
+
+    public Pessoa(int id, String nome){ // construtor
+        this.id = id;
         this.nome = nome;
-        this.cpf = cpf; //corrigir com a função setCpf
     }
 
-    //métodos
-    public String getNome() {
+    // métodos getters
+    public int getId(){
+        return id;
+    }
+    public String getNome(){
         return nome;
+    }
+
+    // métodos setters
+    public void setId(int id){
+        if(id <= 0){
+            throw new IllegalArgumentException("O ID deve ser positivo.");
+            // THROW -> palavra-chave que "lança" uma exceção
+            // new IllegalArgumentException(...) -> cria uma nova exceção desse tipo
+        }
+        this.id = id;
     }
     public void setNome(String nome){
+        if(nome == null || nome.isEmpty()){
+            throw new IllegalArgumentException("O nome deve ser preenchido.");
+        }
         this.nome = nome;
     }
-    public String getCpf() {
-        return nome;
-    }
-    public void setCpf(String nome){
-        this.nome = nome;
+
+    @Override
+    public String toString(){
+        return id + " - " + nome;
     }
 }
+
