@@ -3,12 +3,13 @@ package pessoa;
 public class Pessoa {
     //atributos
     private String nome;
-    private String cpf;
+    private static int contadorID = 0; // contador que atribui os IDs automaticamente
+    private final int id; //valor não pode ser alterado depois do construtor
 
     //construtor
-    public Pessoa(String nome, String cpf) {
+    public Pessoa(String nome) {
         this.nome = nome;
-        this.cpf = cpf; //corrigir com a função setCpf
+        this.id = contadorID++; // atribui o ID e incrementa a var contadorID
     }
 
     //métodos
@@ -18,10 +19,8 @@ public class Pessoa {
     public void setNome(String nome){
         this.nome = nome;
     }
-    public String getCpf() {
-        return nome;
+    public int getId() {
+        return id;
     }
-    public void setCpf(String nome){
-        this.nome = nome;
-    }
+    //não vai ter setId() por que id é final
 }
