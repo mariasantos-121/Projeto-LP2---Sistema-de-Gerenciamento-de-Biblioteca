@@ -1,6 +1,7 @@
+import item.*;
 import pessoa.Bibliotecario;
 import pessoa.Leitor;
-
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main {
