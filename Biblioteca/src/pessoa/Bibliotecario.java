@@ -5,6 +5,7 @@ import item.Item;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
+import java.io.*; // Importa todas as classes de Input/Output
 
 public class Bibliotecario extends Pessoa {
     private static int contadorBibliotecario = 0;
@@ -246,4 +247,170 @@ public class Bibliotecario extends Pessoa {
             return false;
         }
     }
+    /**
+     * Limpa todos os dados da memória e salva esse estado "vazio" no arquivo.
+     */
+    public void resetarDados() {
+        // 1. Pede a confirmação
+        System.out.print("TEM CERTEZA? Isso apagará TODOS os dados salvos permanentemente. (s/n): ");
+        String confirmacao = sc.nextLine(); // Usa o Scanner da classe
+
+        // 2. Verifica a resposta
+        if (confirmacao.equalsIgnoreCase("s")) {
+            // 3. Se for "s" (ou "S"), executa a lógica original
+            this.leitores.clear();
+            this.itens.clear();
+            this.emprestimos.clear();
+
+            Item.setContadorID(0);
+            Leitor.setContadorLeitor(0);
+            Emprestimo.setContadorID(0);
+
+            salvarDados();
+            System.out.println(">>> DADOS DA BIBLIOTECA RESETADOS COM SUCESSO! <<<");
+
+        } else {
+            // 4. Se for qualquer outra coisa, cancela
+            System.out.println("Operação de reset CANCELADA.");
+        }
+    }
+
+    /**
+     * Salva o estado atual das listas e contadores em um arquivo.
+     */
+    public void salvarDados() {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("biblioteca.dat"))) {
+            // Salva os contadores estáticos
+            oos.writeInt(Item.getContadorID());
+            oos.writeInt(Leitor.getContadorLeitor());
+            oos.writeInt(Emprestimo.getContadorID());
+
+            // Salva as listas
+            oos.writeObject(leitores);
+            oos.writeObject(itens);
+            oos.writeObject(emprestimos);
+
+            System.out.println("Dados salvos com sucesso em biblioteca.dat");
+        } catch (IOException e) {
+            System.out.println("Erro ao salvar dados: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Carrega o estado das listas e contadores do arquivo.
+     */
+    @SuppressWarnings("unchecked") // Suprime o aviso do cast das ArrayLists
+    public void carregarDados() {
+        File arquivo = new File("biblioteca.dat");
+        if (!arquivo.exists()) {
+            System.out.println("Arquivo de dados não encontrado. Começando com novos dados.");
+            return;
+        }
+
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(arquivo))) {
+            // Carrega os contadores estáticos (NA MESMA ORDEM que salvou)
+            Item.setContadorID(ois.readInt());
+            Leitor.setContadorLeitor(ois.readInt());
+            Emprestimo.setContadorID(ois.readInt());
+
+            // Carrega as listas (NA MESMA ORDEM que salvou)
+            this.leitores = (ArrayList<Leitor>) ois.readObject();
+            this.itens = (ArrayList<Item>) ois.readObject();
+            this.emprestimos = (ArrayList<Emprestimo>) ois.readObject();
+
+            System.out.println("Dados carregados com sucesso de biblioteca.dat");
+        } catch (FileNotFoundException e) {
+            // Isso não deve acontecer por causa do 'arquivo.exists()'
+            System.out.println("Arquivo de dados não encontrado.");
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println("Erro ao carregar dados: " + e.getMessage());
+            // Se der erro, zera as listas para evitar dados corrompidos
+            this.leitores = new ArrayList<>();
+            this.itens = new ArrayList<>();
+            this.emprestimos = new ArrayList<>();
+        }
+    }
+
+    // ... (dentro da classe Bibliotecario) ...
+
+    public void deletarLeitor() {
+        if (leitores.isEmpty()) {
+            System.out.println("Não há leitores para deletar.");
+            return;
+        }
+
+        System.out.println("--- Lista de Leitores ---");
+        listLeitores();
+
+        int idLeitor = lerInteiro("Digite o ID do leitor que deseja DELETAR: ");
+        Leitor leitor = buscaID(idLeitor);
+
+        if (leitor == null) {
+            System.out.println("Leitor não encontrado.");
+            return;
+        }
+
+        // VERIFICAÇÃO DE DEPENDÊNCIA
+        for (Emprestimo emp : emprestimos) {
+            if (emp.getLeitor().equals(leitor) && !emp.isDevolvido()) {
+                System.out.println("ERRO: Este leitor possui um empréstimo ativo (ID: " + emp.getId() + ").");
+                System.out.println("Realize a devolução antes de deletar o leitor.");
+                return;
+            }
+        }
+
+        // CONFIRMAÇÃO
+        System.out.print("Tem certeza que deseja deletar o leitor: " + leitor.getNome() + " (ID: " + leitor.getId() + ")? (s/n): ");
+        String confirmacao = sc.nextLine();
+
+        if (confirmacao.equalsIgnoreCase("s")) {
+            leitores.remove(leitor); // Remove da lista
+            salvarDados(); // Salva a alteração no arquivo
+            System.out.println("Leitor deletado com sucesso.");
+        } else {
+            System.out.println("Operação cancelada.");
+        }
+    }
+
+    public void deletarItem() {
+        if (itens.isEmpty()) {
+            System.out.println("Não há itens para deletar.");
+            return;
+        }
+
+        System.out.println("--- Lista de Itens ---");
+        listarItens();
+
+        int idItem = lerInteiro("Digite o ID do item que deseja DELETAR: ");
+        Item item = buscarItemPorId(idItem);
+
+        if (item == null) {
+            System.out.println("Item não encontrado.");
+            return;
+        }
+
+        // VERIFICAÇÃO DE DEPENDÊNCIA
+        for (Emprestimo emp : emprestimos) {
+            if (emp.getItem().equals(item) && !emp.isDevolvido()) {
+                System.out.println("ERRO: Este item está atualmente emprestado (Empréstimo ID: " + emp.getId() + ").");
+                System.out.println("Realize a devolução antes de deletar o item.");
+                return;
+            }
+        }
+
+        // CONFIRMAÇÃO
+        System.out.print("Tem certeza que deseja deletar o item: " + item.getTitulo() + " (ID: " + item.getId() + ")? (s/n): ");
+        String confirmacao = sc.nextLine();
+
+        if (confirmacao.equalsIgnoreCase("s")) {
+            itens.remove(item); // Remove da lista
+            salvarDados(); // Salva a alteração no arquivo
+            System.out.println("Item deletado com sucesso.");
+        } else {
+            System.out.println("Operação cancelada.");
+        }
+    }
+
 }
+
+

@@ -1,5 +1,6 @@
 import item.*;
 import pessoa.Bibliotecario;
+import pessoa.Leitor;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -8,6 +9,8 @@ public class Main {
         Scanner sc = new Scanner(System.in);
         Bibliotecario b = new Bibliotecario("Admin");
 
+        b.carregarDados();
+
         int opcao;
         do {
             System.out.println("\n===== MENU PRINCIPAL =====");
@@ -15,18 +18,24 @@ public class Main {
             System.out.println("2 - Menu de Itens");
             System.out.println("3 - Menu de Empréstimos");
             System.out.println("4 - Menu de Devoluções");
+            System.out.println("5 - [PERIGO] Resetar Todos os Dados");
             System.out.println("0 - Sair");
 
-            opcao = lerOpcao(sc, 0, 4);
+            opcao = lerOpcao(sc, 0, 5);
 
             switch (opcao) {
                 case 1 -> menuLeitores(b, sc);
                 case 2 -> menuItens(b, sc);
                 case 3 -> menuEmprestimos(b, sc);
                 case 4 -> b.realizarDevolucao();
+                case 5 -> b.resetarDados();
                 case 0 -> System.out.println("Encerrando o sistema...");
             }
         } while (opcao != 0);
+
+        b.salvarDados();
+        sc.close();
+
     }
 
     private static void menuLeitores(Bibliotecario b, Scanner sc) {
@@ -35,13 +44,15 @@ public class Main {
             System.out.println("\n--- MENU DE LEITORES ---");
             System.out.println("1 - Cadastrar Leitor");
             System.out.println("2 - Listar Leitores");
+            System.out.println("3 - Deletar Leitor");
             System.out.println("0 - Voltar");
 
-            op = lerOpcao(sc, 0, 2);
+            op = lerOpcao(sc, 0, 3);
 
             switch (op) {
                 case 1 -> b.cadLeitor();
                 case 2 -> b.listLeitores();
+                case 3 -> b.deletarLeitor();
                 case 0 -> System.out.println("↩ Voltando...");
             }
         } while (op != 0);
@@ -54,9 +65,10 @@ public class Main {
             System.out.println("1 - Cadastrar Livro");
             System.out.println("2 - Cadastrar Revista");
             System.out.println("3 - Listar Itens");
+            System.out.println("4 - Deletar Item");
             System.out.println("0 - Voltar");
 
-            op = lerOpcao(sc, 0, 3);
+            op = lerOpcao(sc, 0, 4);
 
             switch (op) {
                 case 1 -> {
@@ -76,6 +88,7 @@ public class Main {
                     b.addItem(new Revista(titulo, qtd, editora));
                 }
                 case 3 -> b.listarItens();
+                case 4 -> b.deletarItem();
                 case 0 -> System.out.println("↩ Voltando...");
             }
         } while (op != 0);
