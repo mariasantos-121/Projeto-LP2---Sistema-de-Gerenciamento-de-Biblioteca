@@ -19,11 +19,11 @@ public class Livro extends Item {
     @Override
     public void exibirInfo() {
         System.out.println(
+                "ID: " + getId() + " | " +
                 "Livro: " + getTitulo() +
                         " | Autor: " + autor +
                         " | Quantidade: " + getQuantidadeExemplares() +
-                        " | Disponível: " + (isDisponivel() ? "Sim" : "Não") +
-                        " | ID: " + getId()
+                        " | Disponível: " + (isDisponivel() ? "Sim" : "Não")
         );
     }
 }
