@@ -1,12 +1,15 @@
 import item.*;
 import pessoa.Bibliotecario;
 import java.util.InputMismatchException;
+import dados.BaseDeDados;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         Bibliotecario b = new Bibliotecario("Admin");
+
+        b.carregarItensIniciais(BaseDeDados.carregarItensIniciais());
 
         int opcao;
         do {
@@ -99,6 +102,9 @@ public class Main {
         } while (op != 0);
     }
 
+    // -----------------------
+    // MÉTODOS AUXILIARES
+    // -----------------------
     private static int lerOpcao(Scanner sc, int min, int max) {
         int opcao;
         while (true) {
