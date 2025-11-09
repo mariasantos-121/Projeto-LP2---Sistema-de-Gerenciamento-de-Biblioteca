@@ -5,6 +5,9 @@ import item.Item;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
+import java.util.ArrayList;
+import dados.BaseDeDados;
+
 
 public class Bibliotecario extends Pessoa {
     private static int contadorBibliotecario = 0;
@@ -18,8 +21,14 @@ public class Bibliotecario extends Pessoa {
         this.leitores = new ArrayList<>();
         this.itens = new ArrayList<>();
         this.emprestimos = new ArrayList<>();
+
+        this.itens.addAll(BaseDeDados.carregarItensIniciais());
+        this.leitores.addAll(BaseDeDados.carregarLeitoresIniciais());
     }
 
+    // -----------------------
+    // CADASTRO DE LEITOR
+    // -----------------------
     public void cadLeitor() {
         System.out.print("Digite o nome do Leitor: ");
         String nome = sc.nextLine();
@@ -60,6 +69,9 @@ public class Bibliotecario extends Pessoa {
         return null;
     }
 
+    // -----------------------
+    // AUTENTICAÇÃO DE LEITOR
+    // -----------------------
     public Leitor autenticarLeitor() {
         if (leitores.isEmpty()) {
             System.out.println("Nenhum leitor cadastrado ainda.");
@@ -97,6 +109,9 @@ public class Bibliotecario extends Pessoa {
         return leitor;
     }
 
+    // -----------------------
+    // MENU DE ITENS
+    // -----------------------
     public void addItem(Item item) {
         itens.add(item);
         System.out.println("Item adicionado com sucesso! ID: " + item.getId());
@@ -121,6 +136,9 @@ public class Bibliotecario extends Pessoa {
         return null;
     }
 
+    // -----------------------
+    // MENU DE EMPRÉSTIMOS
+    // -----------------------
     public void realizarEmprestimo() {
         Leitor leitor = autenticarLeitor();
         if (leitor == null) return;
@@ -167,6 +185,9 @@ public class Bibliotecario extends Pessoa {
         }
     }
 
+    // -----------------------
+    // MENU DE DEVOLUÇÕES
+    // -----------------------
     public void realizarDevolucao() {
         Leitor leitor = autenticarLeitor();
         if (leitor == null) return;
@@ -204,6 +225,9 @@ public class Bibliotecario extends Pessoa {
         emprestimo.devolver();
     }
 
+    // -----------------------
+    // MÉTODO AUXILIAR PARA LER INTEIROS
+    // -----------------------
     private int lerInteiro(String mensagem) {
         int numero;
         while (true) {
@@ -219,6 +243,9 @@ public class Bibliotecario extends Pessoa {
         }
     }
 
+    // -----------------------
+    // VERIFICAÇÃO COMPLETA DE CPF
+    // -----------------------
     private boolean validarCPF(String cpf) {
         cpf = cpf.replaceAll("\\D", ""); // remove pontos e traços
 
@@ -245,5 +272,10 @@ public class Bibliotecario extends Pessoa {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public void carregarItensIniciais(ArrayList<Item> listaItens) {
+        this.itens.addAll(listaItens);
+        System.out.println(listaItens.size() + " itens pré-carregados no sistema.");
     }
 }
