@@ -1,9 +1,9 @@
 package emprestimo;
-
+import java.io.Serializable;
 import item.Item;
 import pessoa.Leitor;
 
-public class Emprestimo {
+public class Emprestimo implements Serializable{
     private static int contadorID = 0;
     private final int id;
     private Leitor leitor;
@@ -18,6 +18,14 @@ public class Emprestimo {
 
         // Diminui o número de exemplares disponíveis
         item.setQuantidadeExemplares(item.getQuantidadeExemplares() - 1);
+    }
+
+    // ... dentro da classe Emprestimo ...
+    public static int getContadorID() {
+        return contadorID;
+    }
+    public static void setContadorID(int c) {
+        contadorID = c;
     }
 
     public int getId() {

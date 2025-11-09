@@ -1,26 +1,24 @@
 package pessoa;
+import java.io.Serializable;
 
-public class Pessoa {
-    //atributos
+public abstract class Pessoa implements Serializable {
     private String nome;
-    private static int contadorID = 0; // contador que atribui os IDs automaticamente
-    private final int id; //valor não pode ser alterado depois do construtor
+    private final int id;
 
-    //construtor
-    public Pessoa(String nome) {
+    public Pessoa(String nome, int id) {
         this.nome = nome;
-        this.id = contadorID++; // atribui o ID e incrementa a var contadorID
+        this.id = id;
     }
 
-    //métodos
     public String getNome() {
         return nome;
     }
-    public void setNome(String nome){
+
+    public void setNome(String nome) {
         this.nome = nome;
     }
+
     public int getId() {
         return id;
     }
-    //não vai ter setId() por que id é final
 }
