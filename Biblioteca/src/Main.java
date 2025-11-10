@@ -1,6 +1,5 @@
 import item.*;
 import pessoa.Bibliotecario;
-import pessoa.Leitor;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
