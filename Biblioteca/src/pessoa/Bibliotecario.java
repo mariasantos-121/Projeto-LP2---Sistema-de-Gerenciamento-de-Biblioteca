@@ -8,7 +8,7 @@ import java.util.Scanner;
 import java.io.*; // Importa todas as classes de Input/Output
 
 public class Bibliotecario extends Pessoa {
-    private static int contadorBibliotecario = 0;
+    private static int contadorBibliotecario = 1;
     private ArrayList<Leitor> leitores;
     private ArrayList<Item> itens;
     private ArrayList<Emprestimo> emprestimos;
