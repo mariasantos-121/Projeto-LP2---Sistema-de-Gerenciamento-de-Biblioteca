@@ -1,18 +1,19 @@
 package item;
+import pessoa.Autor;
 
 public class Livro extends Item {
-    private String autor;
+    private Autor autor;
 
-    public Livro(String titulo, String autor, int quantidadeExemplares) {
-        super(titulo, quantidadeExemplares);
+    public Livro(String titulo, Autor autor, int quantidadeExemplares, Categoria categoria) {
+        super(titulo, quantidadeExemplares, categoria); // Passa categoria para o pai
         this.autor = autor;
     }
 
-    public String getAutor() {
+    public Autor getAutor() {
         return autor;
     }
 
-    public void setAutor(String autor) {
+    public void setAutor(Autor autor) {
         this.autor = autor;
     }
 
@@ -20,8 +21,9 @@ public class Livro extends Item {
     public void exibirInfo() {
         System.out.println(
                 "ID: " + getId() + " | " +
-                "Livro: " + getTitulo() +
-                        " | Autor: " + autor +
+                        "Livro: " + getTitulo() +
+                        " | Autor: " + autor.getNome() +
+                        " | Categoria: " + getCategoria().getNome() + // NOVO
                         " | Quantidade: " + getQuantidadeExemplares() +
                         " | Disponível: " + (isDisponivel() ? "Sim" : "Não")
         );

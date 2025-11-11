@@ -2,6 +2,9 @@ package pessoa;
 
 import emprestimo.Emprestimo;
 import item.Item;
+import item.Categoria; // IMPORTAR
+import item.Livro;    // IMPORTAR
+import item.Revista;  // IMPORTAR
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -10,6 +13,8 @@ import java.io.*; // Importa todas as classes de Input/Output
 public class Bibliotecario extends Pessoa {
     private static int contadorBibliotecario = 1;
     private ArrayList<Leitor> leitores;
+    private ArrayList<Autor> autores;
+    private ArrayList<Categoria> categorias;
     private ArrayList<Item> itens;
     private ArrayList<Emprestimo> emprestimos;
     private Scanner sc = new Scanner(System.in);
@@ -19,6 +24,8 @@ public class Bibliotecario extends Pessoa {
         this.leitores = new ArrayList<>();
         this.itens = new ArrayList<>();
         this.emprestimos = new ArrayList<>();
+        this.autores = new ArrayList<>();
+        this.categorias = new ArrayList<>();
     }
 
     public void cadLeitor() {
@@ -56,6 +63,62 @@ public class Bibliotecario extends Pessoa {
         for (Leitor leitor : leitores) {
             if (leitor.getId() == id) {
                 return leitor;
+            }
+        }
+        return null;
+    }
+
+    // --- NOVOS MÉTODOS PARA AUTOR ---
+    public void cadastrarAutor() {
+        System.out.print("Nome do Autor: ");
+        String nome = sc.nextLine();
+        Autor novoAutor = new Autor(nome);
+        autores.add(novoAutor);
+        System.out.println("Autor cadastrado com sucesso! ID: " + novoAutor.getId());
+    }
+
+    public void listarAutores() {
+        if (autores.isEmpty()) {
+            System.out.println("Nenhum autor cadastrado.");
+            return;
+        }
+        for (Autor a : autores) {
+            System.out.println("ID: " + a.getId() + " | Nome: " + a.getNome());
+        }
+    }
+
+    public Autor buscarAutorPorId(int id) {
+        for (Autor a : autores) {
+            if (a.getId() == id) {
+                return a;
+            }
+        }
+        return null;
+    }
+
+    // --- NOVOS MÉTODOS PARA CATEGORIA ---
+    public void cadastrarCategoria() {
+        System.out.print("Nome da Categoria: ");
+        String nome = sc.nextLine();
+        Categoria novaCat = new Categoria(nome);
+        categorias.add(novaCat);
+        System.out.println("Categoria cadastrada com sucesso! ID: " + novaCat.getId());
+    }
+
+    public void listarCategorias() {
+        if (categorias.isEmpty()) {
+            System.out.println("Nenhuma categoria cadastrada.");
+            return;
+        }
+        for (Categoria c : categorias) {
+            System.out.println("ID: " + c.getId() + " | Nome: " + c.getNome());
+        }
+    }
+
+    public Categoria buscarCategoriaPorId(int id) {
+        for (Categoria c : categorias) {
+            if (c.getId() == id) {
+                return c;
             }
         }
         return null;
@@ -178,6 +241,8 @@ public class Bibliotecario extends Pessoa {
         salvarDados(); // Salva as alterações
     }
 
+    // --- ATUALIZAR editarItem() (IMPORTANTE!) ---
+    // (O método antigo vai quebrar, pois autor não é mais String)
     public void editarItem() {
         if (itens.isEmpty()) {
             System.out.println("Não há itens para editar.");
@@ -186,7 +251,6 @@ public class Bibliotecario extends Pessoa {
 
         System.out.println("--- Lista de Itens ---");
         listarItens();
-
         int idItem = lerInteiro("Digite o ID do item que deseja EDITAR: ");
         Item item = buscarItemPorId(idItem);
 
@@ -200,34 +264,45 @@ public class Bibliotecario extends Pessoa {
         System.out.println("\nO que deseja editar?");
         System.out.println("1 - Título");
         System.out.println("2 - Quantidade de Exemplares");
+        System.out.println("3 - Categoria");
 
-        // Mostra opções específicas para cada tipo de Item
         if (item instanceof item.Livro) {
-            System.out.println("3 - Autor");
+            System.out.println("4 - Autor");
         } else if (item instanceof item.Revista) {
-            System.out.println("3 - Editora");
+            System.out.println("4 - Editora");
         }
         System.out.println("0 - Cancelar");
 
         int opcao = lerInteiro("Escolha: ");
 
         switch (opcao) {
-            case 1 -> {
-                System.out.print("Digite o novo título: ");
-                String novoTitulo = sc.nextLine();
-                item.setTitulo(novoTitulo);
+            case 1 -> { /* ... (igual - Título) ... */ }
+            case 2 -> { /* ... (igual - Quantidade) ... */ }
+            case 3 -> { // NOVO CASO: EDITAR CATEGORIA
+                System.out.println("--- Categorias Disponíveis ---");
+                listarCategorias();
+                int idCat = lerInteiro("Digite o ID da nova Categoria: ");
+                Categoria novaCat = buscarCategoriaPorId(idCat);
+                if (novaCat != null) {
+                    item.setCategoria(novaCat);
+                } else {
+                    System.out.println("Categoria não encontrada.");
+                }
             }
-            case 2 -> {
-                int novaQtd = lerInteiro("Digite a nova quantidade: ");
-                item.setQuantidadeExemplares(novaQtd);
-            }
-            case 3 -> {
-                // Java 17+ (Pattern Matching for instanceof)
+            case 4 -> { // MUDOU DE 3 PARA 4
                 if (item instanceof item.Livro livro) {
-                    System.out.print("Digite o novo autor: ");
-                    String novoAutor = sc.nextLine();
-                    livro.setAutor(novoAutor);
+                    // NOVO: EDITAR AUTOR (OBJETO)
+                    System.out.println("--- Autores Disponíveis ---");
+                    listarAutores();
+                    int idAut = lerInteiro("Digite o ID do novo Autor: ");
+                    Autor novoAutor = buscarAutorPorId(idAut);
+                    if (novoAutor != null) {
+                        livro.setAutor(novoAutor);
+                    } else {
+                        System.out.println("Autor não encontrado.");
+                    }
                 } else if (item instanceof item.Revista revista) {
+                    // (igual - Editora)
                     System.out.print("Digite a nova editora: ");
                     String novaEditora = sc.nextLine();
                     revista.setEditora(novaEditora);
@@ -236,18 +311,12 @@ public class Bibliotecario extends Pessoa {
                     return;
                 }
             }
-            case 0 -> {
-                System.out.println("Edição cancelada.");
-                return; // Sai sem salvar
-            }
-            default -> {
-                System.out.println("Opção inválida.");
-                return;
-            }
+            case 0 -> { /* ... (igual - Cancelar) ... */ }
+            default -> { /* ... (igual - Default) ... */ }
         }
 
         System.out.println("Item atualizado com sucesso!");
-        salvarDados(); // Salva as alterações
+        salvarDados();
     }
 
     public void realizarEmprestimo() {
@@ -333,6 +402,128 @@ public class Bibliotecario extends Pessoa {
         emprestimo.devolver();
     }
 
+    // ... (depois do método selecionarOuCriarCategoria()) ...
+
+    public void editarAutor() {
+        if (autores.isEmpty()) {
+            System.out.println("Nenhum autor para editar.");
+            return;
+        }
+
+        System.out.println("--- Lista de Autores ---");
+        listarAutores();
+        int idAut = lerInteiro("Digite o ID do autor que deseja EDITAR: ");
+        Autor autor = buscarAutorPorId(idAut);
+
+        if (autor == null) {
+            System.out.println("Autor não encontrado.");
+            return;
+        }
+
+        System.out.print("Digite o novo nome para '" + autor.getNome() + "': ");
+        String novoNome = sc.nextLine();
+        autor.setNome(novoNome);
+        salvarDados();
+        System.out.println("Autor atualizado com sucesso!");
+    }
+
+    public void deletarAutor() {
+        if (autores.isEmpty()) {
+            System.out.println("Nenhum autor para deletar.");
+            return;
+        }
+
+        System.out.println("--- Lista de Autores ---");
+        listarAutores();
+        int idAut = lerInteiro("Digite o ID do autor que deseja DELETAR: ");
+        Autor autor = buscarAutorPorId(idAut);
+
+        if (autor == null) {
+            System.out.println("Autor não encontrado.");
+            return;
+        }
+
+        // VERIFICAÇÃO DE DEPENDÊNCIA
+        for (Item item : this.itens) {
+            if (item instanceof item.Livro livro) { // Java 17+
+                if (livro.getAutor().equals(autor)) {
+                    System.out.println("ERRO: Este autor está associado ao livro '" + livro.getTitulo() + "'.");
+                    System.out.println("Não é possível deletar.");
+                    return;
+                }
+            }
+        }
+
+        // Confirmação
+        System.out.print("Tem certeza que deseja deletar o autor: " + autor.getNome() + "? (s/n): ");
+        if (sc.nextLine().equalsIgnoreCase("s")) {
+            autores.remove(autor);
+            salvarDados();
+            System.out.println("Autor deletado com sucesso.");
+        } else {
+            System.out.println("Operação cancelada.");
+        }
+    }
+
+    public void editarCategoria() {
+        if (categorias.isEmpty()) {
+            System.out.println("Nenhuma categoria para editar.");
+            return;
+        }
+
+        System.out.println("--- Lista de Categorias ---");
+        listarCategorias();
+        int idCat = lerInteiro("Digite o ID da categoria que deseja EDITAR: ");
+        Categoria cat = buscarCategoriaPorId(idCat);
+
+        if (cat == null) {
+            System.out.println("Categoria não encontrada.");
+            return;
+        }
+
+        System.out.print("Digite o novo nome para '" + cat.getNome() + "': ");
+        String novoNome = sc.nextLine();
+        cat.setNome(novoNome);
+        salvarDados();
+        System.out.println("Categoria atualizada com sucesso!");
+    }
+
+    public void deletarCategoria() {
+        if (categorias.isEmpty()) {
+            System.out.println("Nenhuma categoria para deletar.");
+            return;
+        }
+
+        System.out.println("--- Lista de Categorias ---");
+        listarCategorias();
+        int idCat = lerInteiro("Digite o ID da categoria que deseja DELETAR: ");
+        Categoria cat = buscarCategoriaPorId(idCat);
+
+        if (cat == null) {
+            System.out.println("Categoria não encontrada.");
+            return;
+        }
+
+        // VERIFICAÇÃO DE DEPENDÊNCIA
+        for (Item item : this.itens) {
+            if (item.getCategoria().equals(cat)) {
+                System.out.println("ERRO: Esta categoria está associada ao item '" + item.getTitulo() + "'.");
+                System.out.println("Não é possível deletar.");
+                return;
+            }
+        }
+
+        // Confirmação
+        System.out.print("Tem certeza que deseja deletar a categoria: " + cat.getNome() + "? (s/n): ");
+        if (sc.nextLine().equalsIgnoreCase("s")) {
+            categorias.remove(cat);
+            salvarDados();
+            System.out.println("Categoria deletada com sucesso.");
+        } else {
+            System.out.println("Operação cancelada.");
+        }
+    }
+
     private int lerInteiro(String mensagem) {
         int numero;
         while (true) {
@@ -378,6 +569,9 @@ public class Bibliotecario extends Pessoa {
     /**
      * Limpa todos os dados da memória e salva esse estado "vazio" no arquivo.
      */
+    /**
+     * Limpa todos os dados da memória e salva esse estado "vazio" no arquivo.
+     */
     public void resetarDados() {
         // 1. Pede a confirmação
         System.out.print("TEM CERTEZA? Isso apagará TODOS os dados salvos permanentemente. (s/n): ");
@@ -389,10 +583,14 @@ public class Bibliotecario extends Pessoa {
             this.leitores.clear();
             this.itens.clear();
             this.emprestimos.clear();
+            this.autores.clear(); // <-- ADICIONADO
+            this.categorias.clear(); // <-- ADICIONADO
 
             Item.setContadorID(0);
             Leitor.setContadorLeitor(0);
             Emprestimo.setContadorID(0);
+            Autor.setContadorID(0); // <-- ADICIONADO
+            Categoria.setContadorID(0); // <-- ADICIONADO
 
             salvarDados();
             System.out.println(">>> DADOS DA BIBLIOTECA RESETADOS COM SUCESSO! <<<");
@@ -412,11 +610,15 @@ public class Bibliotecario extends Pessoa {
             oos.writeInt(Item.getContadorID());
             oos.writeInt(Leitor.getContadorLeitor());
             oos.writeInt(Emprestimo.getContadorID());
+            oos.writeInt(Autor.getContadorID());      // NOVO
+            oos.writeInt(Categoria.getContadorID());  // NOVO
 
             // Salva as listas
             oos.writeObject(leitores);
             oos.writeObject(itens);
             oos.writeObject(emprestimos);
+            oos.writeObject(autores);                 // NOVO
+            oos.writeObject(categorias);              // NOVO
 
             System.out.println("Dados salvos com sucesso em biblioteca.dat");
         } catch (IOException e) {
@@ -427,7 +629,8 @@ public class Bibliotecario extends Pessoa {
     /**
      * Carrega o estado das listas e contadores do arquivo.
      */
-    @SuppressWarnings("unchecked") // Suprime o aviso do cast das ArrayLists
+// --- ATUALIZAR carregarDados() ---
+    @SuppressWarnings("unchecked")
     public void carregarDados() {
         File arquivo = new File("biblioteca.dat");
         if (!arquivo.exists()) {
@@ -440,22 +643,26 @@ public class Bibliotecario extends Pessoa {
             Item.setContadorID(ois.readInt());
             Leitor.setContadorLeitor(ois.readInt());
             Emprestimo.setContadorID(ois.readInt());
+            Autor.setContadorID(ois.readInt());         // NOVO
+            Categoria.setContadorID(ois.readInt());     // NOVO
 
             // Carrega as listas (NA MESMA ORDEM que salvou)
             this.leitores = (ArrayList<Leitor>) ois.readObject();
             this.itens = (ArrayList<Item>) ois.readObject();
             this.emprestimos = (ArrayList<Emprestimo>) ois.readObject();
+            this.autores = (ArrayList<Autor>) ois.readObject();          // NOVO
+            this.categorias = (ArrayList<Categoria>) ois.readObject();   // NOVO
 
             System.out.println("Dados carregados com sucesso de biblioteca.dat");
-        } catch (FileNotFoundException e) {
-            // Isso não deve acontecer por causa do 'arquivo.exists()'
-            System.out.println("Arquivo de dados não encontrado.");
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (FileNotFoundException e) { /*...*/ }
+        catch (IOException | ClassNotFoundException e) {
             System.out.println("Erro ao carregar dados: " + e.getMessage());
-            // Se der erro, zera as listas para evitar dados corrompidos
+            // Zera TUDO se der erro
             this.leitores = new ArrayList<>();
             this.itens = new ArrayList<>();
             this.emprestimos = new ArrayList<>();
+            this.autores = new ArrayList<>();         // NOVO
+            this.categorias = new ArrayList<>();      // NOVO
         }
     }
 

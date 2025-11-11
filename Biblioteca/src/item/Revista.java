@@ -3,8 +3,9 @@ package item;
 public class Revista extends Item {
     private String editora;
 
-    public Revista(String titulo, int quantidadeExemplares, String editora){
-        super(titulo, quantidadeExemplares);
+    // ATUALIZAR CONSTRUTOR
+    public Revista(String titulo, int quantidadeExemplares, String editora, Categoria categoria){
+        super(titulo, quantidadeExemplares, categoria); // Passa categoria para o pai
         this.editora = editora;
     }
 
@@ -20,6 +21,7 @@ public class Revista extends Item {
         System.out.println(
                 "Revista: " + getTitulo() +
                         " | Editora: " + editora +
+                        " | Categoria: " + getCategoria().getNome() + // NOVO
                         " | Quantidade: " + getQuantidadeExemplares() +
                         " | Disponível: " + (isDisponivel() ? "Sim" : "Não") +
                         " | ID: " + getId()

@@ -7,6 +7,7 @@ public abstract class Item implements Serializable{
     private String titulo;
     private int quantidadeExemplares;
     private boolean disponivel;
+    private Categoria categoria;
 
     // ... dentro da classe Item ...
     public static int getContadorID() {
@@ -16,12 +17,20 @@ public abstract class Item implements Serializable{
         contadorID = c;
     }
 
-    public Item(String titulo, int quantidadeExemplares) {
+    public Item(String titulo, int quantidadeExemplares, Categoria categoria) {
         this.id = contadorID++;
         this.titulo = titulo;
         this.quantidadeExemplares = quantidadeExemplares;
         this.disponivel = true;
+        this.categoria = categoria;
+    }
 
+    public Categoria getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(Categoria categoria) {
+        this.categoria = categoria;
     }
 
     public int getId(){
