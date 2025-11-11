@@ -47,8 +47,10 @@ public class Bibliotecario extends Pessoa {
             System.out.println("Ainda não há leitores cadastrados.");
             return;
         }
-        for (Leitor l : leitores) {
-            System.out.println("ID: " + l.getId() + " | Nome: " + l.getNome());
+
+        for(Leitor l : leitores){
+            l.exibirDetalhes();
+            System.out.println("-----------------------------");
         }
     }
 
@@ -470,7 +472,13 @@ public class Bibliotecario extends Pessoa {
         System.out.println("--- Lista de Leitores ---");
         listLeitores();
 
-        int idLeitor = lerInteiro("Digite o ID do leitor que deseja DELETAR: ");
+        int idLeitor = lerInteiro("Digite o ID do leitor que deseja DELETAR ou digite 0 para voltar ao menu:");
+
+        if(idLeitor == 0){
+            System.out.println("Voltando ao menu...");
+            return;
+        }
+
         Leitor leitor = buscaID(idLeitor);
 
         if (leitor == null) {
@@ -537,6 +545,14 @@ public class Bibliotecario extends Pessoa {
         } else {
             System.out.println("Operação cancelada.");
         }
+    }
+
+    @Override
+    public void exibirInfo(){
+        System.out.println("--- Informacoes Bibliotecario ---");
+        System.out.println("ID: " + getId());
+        System.out.println("Nome: " + getNome());
+        System.out.println("Status: Gerenciando " + leitores.size() + " leitores e " + itens.size() + " itens.");
     }
 
 }

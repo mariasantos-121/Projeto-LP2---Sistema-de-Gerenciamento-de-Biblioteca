@@ -24,4 +24,12 @@ public class Leitor extends Pessoa {
     public void setCpf(String cpf) {
         this.cpf = cpf;
     }
+
+    @Override
+    public void exibirInfo(){
+        System.out.println("--- Informacoes do Leitor ---");
+        System.out.println("ID: " + getId());
+        System.out.println("Nome: " + getNome());
+        System.out.println("CPF: " + getCpf());
+    }
 }
