@@ -8,7 +8,7 @@ import java.util.Scanner;
 import java.io.*; // Importa todas as classes de Input/Output
 
 public class Bibliotecario extends Pessoa {
-    private static int contadorBibliotecario = 0;
+    private static int contadorBibliotecario = 1;
     private ArrayList<Leitor> leitores;
     private ArrayList<Item> itens;
     private ArrayList<Emprestimo> emprestimos;
@@ -120,6 +120,134 @@ public class Bibliotecario extends Pessoa {
             }
         }
         return null;
+    }
+
+    public void editarLeitor() {
+        if (leitores.isEmpty()) {
+            System.out.println("Não há leitores para editar.");
+            return;
+        }
+
+        System.out.println("--- Lista de Leitores ---");
+        listLeitores();
+
+        int idLeitor = lerInteiro("Digite o ID do leitor que deseja EDITAR: ");
+        Leitor leitor = buscaID(idLeitor);
+
+        if (leitor == null) {
+            System.out.println("Leitor não encontrado.");
+            return;
+        }
+
+        System.out.println("Editando Leitor: " + leitor.getNome());
+        System.out.println("O que deseja editar?");
+        System.out.println("1 - Nome");
+        System.out.println("2 - CPF");
+        System.out.println("0 - Cancelar");
+
+        int opcao = lerInteiro("Escolha: ");
+
+        switch (opcao) {
+            case 1 -> {
+                System.out.print("Digite o novo nome: ");
+                String novoNome = sc.nextLine();
+                leitor.setNome(novoNome);
+                System.out.println("Nome atualizado!");
+            }
+            case 2 -> {
+                String novoCpf;
+                while (true) {
+                    System.out.print("Digite o novo CPF (somente números): ");
+                    novoCpf = sc.nextLine();
+                    if (validarCPF(novoCpf)) {
+                        leitor.setCpf(novoCpf);
+                        System.out.println("CPF atualizado!");
+                        break;
+                    } else {
+                        System.out.println("CPF inválido! Tente novamente.");
+                    }
+                }
+            }
+            case 0 -> {
+                System.out.println("Edição cancelada.");
+                return; // Sai do método sem salvar
+            }
+            default -> System.out.println("Opção inválida.");
+        }
+
+        salvarDados(); // Salva as alterações
+    }
+
+    public void editarItem() {
+        if (itens.isEmpty()) {
+            System.out.println("Não há itens para editar.");
+            return;
+        }
+
+        System.out.println("--- Lista de Itens ---");
+        listarItens();
+
+        int idItem = lerInteiro("Digite o ID do item que deseja EDITAR: ");
+        Item item = buscarItemPorId(idItem);
+
+        if (item == null) {
+            System.out.println("Item não encontrado.");
+            return;
+        }
+
+        System.out.println("--- Editando Item ---");
+        item.exibirInfo();
+        System.out.println("\nO que deseja editar?");
+        System.out.println("1 - Título");
+        System.out.println("2 - Quantidade de Exemplares");
+
+        // Mostra opções específicas para cada tipo de Item
+        if (item instanceof item.Livro) {
+            System.out.println("3 - Autor");
+        } else if (item instanceof item.Revista) {
+            System.out.println("3 - Editora");
+        }
+        System.out.println("0 - Cancelar");
+
+        int opcao = lerInteiro("Escolha: ");
+
+        switch (opcao) {
+            case 1 -> {
+                System.out.print("Digite o novo título: ");
+                String novoTitulo = sc.nextLine();
+                item.setTitulo(novoTitulo);
+            }
+            case 2 -> {
+                int novaQtd = lerInteiro("Digite a nova quantidade: ");
+                item.setQuantidadeExemplares(novaQtd);
+            }
+            case 3 -> {
+                // Java 17+ (Pattern Matching for instanceof)
+                if (item instanceof item.Livro livro) {
+                    System.out.print("Digite o novo autor: ");
+                    String novoAutor = sc.nextLine();
+                    livro.setAutor(novoAutor);
+                } else if (item instanceof item.Revista revista) {
+                    System.out.print("Digite a nova editora: ");
+                    String novaEditora = sc.nextLine();
+                    revista.setEditora(novaEditora);
+                } else {
+                    System.out.println("Opção inválida.");
+                    return;
+                }
+            }
+            case 0 -> {
+                System.out.println("Edição cancelada.");
+                return; // Sai sem salvar
+            }
+            default -> {
+                System.out.println("Opção inválida.");
+                return;
+            }
+        }
+
+        System.out.println("Item atualizado com sucesso!");
+        salvarDados(); // Salva as alterações
     }
 
     public void realizarEmprestimo() {

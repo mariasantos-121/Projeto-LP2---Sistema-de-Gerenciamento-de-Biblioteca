@@ -43,15 +43,17 @@ public class Main {
             System.out.println("\n--- MENU DE LEITORES ---");
             System.out.println("1 - Cadastrar Leitor");
             System.out.println("2 - Listar Leitores");
-            System.out.println("3 - Deletar Leitor");
+            System.out.println("3 - Editar Leitor");
+            System.out.println("4 - Deletar Leitor");
             System.out.println("0 - Voltar");
 
-            op = lerOpcao(sc, 0, 3);
+            op = lerOpcao(sc, 0, 4); // MUDOU DE 3 PARA 4
 
             switch (op) {
                 case 1 -> b.cadLeitor();
                 case 2 -> b.listLeitores();
-                case 3 -> b.deletarLeitor();
+                case 3 -> b.editarLeitor();
+                case 4 -> b.deletarLeitor();
                 case 0 -> System.out.println("↩ Voltando...");
             }
         } while (op != 0);
@@ -64,10 +66,11 @@ public class Main {
             System.out.println("1 - Cadastrar Livro");
             System.out.println("2 - Cadastrar Revista");
             System.out.println("3 - Listar Itens");
-            System.out.println("4 - Deletar Item");
+            System.out.println("4 - Editar Item");
+            System.out.println("5 - Deletar Item");
             System.out.println("0 - Voltar");
 
-            op = lerOpcao(sc, 0, 4);
+            op = lerOpcao(sc, 0, 5);
 
             switch (op) {
                 case 1 -> {
@@ -87,7 +90,8 @@ public class Main {
                     b.addItem(new Revista(titulo, qtd, editora));
                 }
                 case 3 -> b.listarItens();
-                case 4 -> b.deletarItem();
+                case 4 -> b.editarItem();
+                case 5 -> b.deletarItem();
                 case 0 -> System.out.println("↩ Voltando...");
             }
         } while (op != 0);
