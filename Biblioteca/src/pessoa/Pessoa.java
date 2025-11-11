@@ -21,4 +21,6 @@ public abstract class Pessoa implements Serializable {
     public int getId() {
         return id;
     }
+
+    public abstract void exibirInfo();
 }
