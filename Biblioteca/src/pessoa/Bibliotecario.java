@@ -54,8 +54,9 @@ public class Bibliotecario extends Pessoa {
             System.out.println("Ainda não há leitores cadastrados.");
             return;
         }
-        for (Leitor l : leitores) {
-            System.out.println("ID: " + l.getId() + " | Nome: " + l.getNome());
+        for(Leitor l : leitores){
+            l.exibirInfo();
+            System.out.println("-----------------------------");
         }
     }
 
@@ -744,6 +745,14 @@ public class Bibliotecario extends Pessoa {
         } else {
             System.out.println("Operação cancelada.");
         }
+    }
+
+    @Override
+    public void exibirInfo(){
+        System.out.println("--- Informacoes Bibliotecario ---");
+        System.out.println("ID: " + getId());
+        System.out.println("Nome: " + getNome());
+        System.out.println("Status: Gerenciando " + leitores.size() + " leitores e " + itens.size() + " itens.");
     }
 
 }
