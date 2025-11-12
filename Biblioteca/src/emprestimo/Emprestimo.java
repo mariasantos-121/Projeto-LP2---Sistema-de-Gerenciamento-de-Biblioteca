@@ -16,14 +16,11 @@ public class Emprestimo implements Serializable{
         this.item = item;
         this.devolvido = false;
 
-        // Diminui o número de exemplares disponíveis
         item.setQuantidadeExemplares(item.getQuantidadeExemplares() - 1);
     }
 
-    // ... dentro da classe Emprestimo ...
-    public static int getContadorID() {
-        return contadorID;
-    }
+    public static int getContadorID() {return contadorID;}
+
     public static void setContadorID(int c) {
         contadorID = c;
     }

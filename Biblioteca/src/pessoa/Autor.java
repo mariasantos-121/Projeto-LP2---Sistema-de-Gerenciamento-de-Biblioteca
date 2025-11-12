@@ -12,24 +12,13 @@ public class Autor implements Serializable {
         this.nome = nome;
     }
 
+    public int getId() {return id;}
 
-    public int getId() {
-        return id;
-    }
+    public String getNome() {return nome;}
 
-    public String getNome() {
-        return nome;
-    }
+    public void setNome(String nome) {this.nome = nome;}
 
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
+    public static int getContadorID() {return contadorID;}
 
-    public static int getContadorID() {
-        return contadorID;
-    }
-
-    public static void setContadorID(int c) {
-        contadorID = c;
-    }
+    public static void setContadorID(int c) {contadorID = c;}
 }

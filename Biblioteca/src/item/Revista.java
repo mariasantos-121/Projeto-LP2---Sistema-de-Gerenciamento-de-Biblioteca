@@ -3,9 +3,8 @@ package item;
 public class Revista extends Item {
     private String editora;
 
-    // ATUALIZAR CONSTRUTOR
     public Revista(String titulo, int quantidadeExemplares, String editora, Categoria categoria){
-        super(titulo, quantidadeExemplares, categoria); // Passa categoria para o pai
+        super(titulo, quantidadeExemplares, categoria);
         this.editora = editora;
     }
 

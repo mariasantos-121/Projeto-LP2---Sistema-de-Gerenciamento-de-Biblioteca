@@ -2,6 +2,7 @@ package item;
 import java.io.Serializable;
 
 public abstract class Item implements Serializable{
+
     private static int contadorID = 0;
     private final int id;
     private String titulo;
@@ -16,22 +17,14 @@ public abstract class Item implements Serializable{
         this.disponivel = true;
         this.categoria = categoria;
     }
-    // ... dentro da classe Item ...
-    public static int getContadorID() {
-        return contadorID;
-    }
-    public static void setContadorID(int c) {
-        contadorID = c;
-    }
 
+    public static int getContadorID() {return contadorID;}
 
-    public Categoria getCategoria() {
-        return categoria;
-    }
+    public static void setContadorID(int c) {contadorID = c;}
 
-    public void setCategoria(Categoria categoria) {
-        this.categoria = categoria;
-    }
+    public Categoria getCategoria() {return categoria;}
+
+    public void setCategoria(Categoria categoria) {this.categoria = categoria;}
 
     public int getId(){
         return this.id;

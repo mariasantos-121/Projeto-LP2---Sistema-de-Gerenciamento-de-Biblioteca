@@ -5,17 +5,13 @@ public class Livro extends Item {
     private Autor autor;
 
     public Livro(String titulo, Autor autor, int quantidadeExemplares, Categoria categoria) {
-        super(titulo, quantidadeExemplares, categoria); // Passa categoria para o pai
+        super(titulo, quantidadeExemplares, categoria);
         this.autor = autor;
     }
 
-    public Autor getAutor() {
-        return autor;
-    }
+    public Autor getAutor() {return autor;}
 
-    public void setAutor(Autor autor) {
-        this.autor = autor;
-    }
+    public void setAutor(Autor autor) {this.autor = autor;}
 
     @Override
     public void exibirInfo() {
@@ -23,7 +19,7 @@ public class Livro extends Item {
                 "ID: " + getId() + " | " +
                         "Livro: " + getTitulo() +
                         " | Autor: " + autor.getNome() +
-                        " | Categoria: " + getCategoria().getNome() + // NOVO
+                        " | Categoria: " + getCategoria().getNome() +
                         " | Quantidade: " + getQuantidadeExemplares() +
                         " | Disponível: " + (isDisponivel() ? "Sim" : "Não")
         );
