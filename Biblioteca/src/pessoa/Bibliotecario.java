@@ -5,6 +5,7 @@ import item.Item;
 import item.Categoria;
 import item.Livro;
 import item.Revista;
+import evento.Evento;
 import java.util.ArrayList;
 import java.io.*;
 
@@ -16,6 +17,7 @@ public class Bibliotecario extends Pessoa {
     private ArrayList<Categoria> categorias;
     private ArrayList<Item> itens;
     private ArrayList<Emprestimo> emprestimos;
+    private ArrayList<Evento> eventos;
 
     public Bibliotecario(String nome) {
         super(nome, contadorBibliotecario++);
@@ -24,6 +26,7 @@ public class Bibliotecario extends Pessoa {
         this.emprestimos = new ArrayList<>();
         this.autores = new ArrayList<>();
         this.categorias = new ArrayList<>();
+        this.eventos = new ArrayList<>();
     }
 
     // --- 1. MÉTODOS DE LEITOR ---
@@ -265,16 +268,24 @@ public class Bibliotecario extends Pessoa {
 
     // --- 5. MÉTODOS DE LÓGICA DE NEGÓCIO (Empréstimo/Devolução) ---
 
-    public void realizarEmprestimo(Leitor leitor, Item item) {
-        Emprestimo emp = new Emprestimo(leitor, item);
+    public void realizarEmprestimo(Leitor leitor, Item item, String dataPrevista) {
+        Emprestimo emp = new Emprestimo(leitor, item, dataPrevista);
         emprestimos.add(emp);
         System.out.println("Empréstimo realizado com sucesso!");
         emp.exibirInfo();
         salvarDados();
     }
 
+
     public void realizarDevolucao(Emprestimo emprestimo) {
         emprestimo.devolver();
+        salvarDados();
+    }
+
+    public void renovarEmprestimo(Emprestimo emprestimo, String novaData) {
+        emprestimo.setDataPrevista(novaData);
+        System.out.println("Empréstimo renovado com sucesso!");
+        emprestimo.exibirInfo();
         salvarDados();
     }
 
@@ -307,19 +318,67 @@ public class Bibliotecario extends Pessoa {
         return null;
     }
 
-    // --- 6. MÉTODOS DE PERSISTÊNCIA E SISTEMA ---
+    // --- 6. MÉTODOS DE EVENTO---
+
+    public void cadastrarEvento(String nome, String data, String local) {
+        Evento novoEvento = new Evento(nome, data, local);
+        eventos.add(novoEvento);
+        System.out.println("Evento cadastrado com sucesso! ID: " + novoEvento.getId());
+        salvarDados();
+    }
+
+    public void listarEventos() {
+        if (eventos.isEmpty()) {
+            System.out.println("Nenhum evento cadastrado.");
+            return;
+        }
+        for (Evento e : eventos) {
+            e.exibirInfo();
+        }
+    }
+
+    public Evento buscarEventoPorId(int id) {
+        for (Evento e : eventos) {
+            if (e.getId() == id) {
+                return e;
+            }
+        }
+        return null;
+    }
+
+    public void editarEvento(Evento evento, int opcao, String novoValor) {
+        switch (opcao) {
+            case 1 -> evento.setNome(novoValor);
+            case 2 -> evento.setData(novoValor);
+            case 3 -> evento.setLocal(novoValor);
+            default -> System.out.println("Opção de edição inválida.");
+        }
+        System.out.println("Evento atualizado com sucesso!");
+        salvarDados();
+    }
+
+    public void deletarEvento(Evento evento) {
+        // Este CRUD é simples, não precisa de verificação de dependência
+        eventos.remove(evento);
+        System.out.println("Evento deletado com sucesso.");
+        salvarDados();
+    }
+
+    // --- 7. MÉTODOS DE PERSISTÊNCIA E SISTEMA ---
     public void resetarDados() {
         this.leitores.clear();
         this.itens.clear();
         this.emprestimos.clear();
         this.autores.clear();
         this.categorias.clear();
+        this.eventos.clear();
 
         Item.setContadorID(0);
         Leitor.setContadorLeitor(0);
         Emprestimo.setContadorID(0);
         Autor.setContadorID(0);
         Categoria.setContadorID(0);
+        Evento.setContadorID(0);
 
         salvarDados();
         System.out.println(">>> DADOS DA BIBLIOTECA RESETADOS COM SUCESSO! <<<");
@@ -332,11 +391,14 @@ public class Bibliotecario extends Pessoa {
             oos.writeInt(Emprestimo.getContadorID());
             oos.writeInt(Autor.getContadorID());
             oos.writeInt(Categoria.getContadorID());
+            oos.writeInt(Evento.getContadorID());
             oos.writeObject(leitores);
             oos.writeObject(itens);
             oos.writeObject(emprestimos);
             oos.writeObject(autores);
             oos.writeObject(categorias);
+            oos.writeObject(eventos);
+
         } catch (IOException e) {
             System.out.println("Erro ao salvar dados: " + e.getMessage());
         }
@@ -347,6 +409,7 @@ public class Bibliotecario extends Pessoa {
         File arquivo = new File("biblioteca.dat");
         if (!arquivo.exists()) {
             System.out.println("Arquivo de dados não encontrado. Começando com novos dados.");
+            this.cadastrarEvento("Clube do Livro", "Toda Terça às 19h", "Sala Principal");
             return;
         }
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(arquivo))) {
@@ -355,11 +418,13 @@ public class Bibliotecario extends Pessoa {
             Emprestimo.setContadorID(ois.readInt());
             Autor.setContadorID(ois.readInt());
             Categoria.setContadorID(ois.readInt());
+            Evento.setContadorID(ois.readInt());
             this.leitores = (ArrayList<Leitor>) ois.readObject();
             this.itens = (ArrayList<Item>) ois.readObject();
             this.emprestimos = (ArrayList<Emprestimo>) ois.readObject();
             this.autores = (ArrayList<Autor>) ois.readObject();
             this.categorias = (ArrayList<Categoria>) ois.readObject();
+            this.eventos = (ArrayList<Evento>) ois.readObject();
             System.out.println("Dados carregados com sucesso de biblioteca.dat");
         } catch (Exception e) {
             System.out.println("Erro ao carregar dados: " + e.getMessage());
@@ -368,6 +433,7 @@ public class Bibliotecario extends Pessoa {
             this.emprestimos = new ArrayList<>();
             this.autores = new ArrayList<>();
             this.categorias = new ArrayList<>();
+            this.eventos = new ArrayList<>();
         }
     }
 
