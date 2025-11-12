@@ -1,0 +1,110 @@
+classDiagram
+    direction LR
+
+    class Pessoa {
+        <<Abstract>>
+        -nome: String
+        -final id: int
+        +getNome(): String
+        +setNome(String): void
+        +getId(): int
+    }
+
+    class Leitor {
+        -cpf: String
+        -$contadorLeitor: int
+        +getCpf(): String
+        +setCpf(String): void
+        +$getContadorLeitor(): int
+        +$setContadorLeitor(int): void
+    }
+
+    class Bibliotecario {
+        -$contadorBibliotecario: int
+        -leitores: ArrayList~Leitor~
+        -itens: ArrayList~Item~
+        -emprestimos: ArrayList~Emprestimo~
+        +cadLeitor(): void
+        +listLeitores(): void
+        +buscaID(int): Leitor
+        +autenticarLeitor(): Leitor
+        +addItem(Item): void
+        +listarItens(): void
+        +buscarItemPorId(int): Item
+        +realizarEmprestimo(): void
+        +listarEmprestimos(): void
+        +realizarDevolucao(): void
+        -lerInteiro(String): int
+        -validarCPF(String): boolean
+        +resetarDados(): void
+        +salvarDados(): void
+        +carregarDados(): void
+        +deletarLeitor(): void
+        +deletarItem(): void
+    }
+
+    class Item {
+        <<Abstract>>
+        -final id: int
+        -titulo: String
+        -quantidadeExemplares: int
+        -disponivel: boolean
+        -$contadorID: int
+        +getId(): int
+        +getTitulo(): String
+        +setTitulo(String): void
+        +getQuantidadeExemplares(): int
+        +setQuantidadeExemplares(int): void
+        +isDisponivel(): boolean
+        +exibirInfo()*: void  %% <-- ESTA É A LINHA CORRIGIDA
+        +$getContadorID(): int
+        +$setContadorID(int): void
+    }
+
+    class Livro {
+        -autor: String
+        +getAutor(): String
+        +setAutor(String): void
+        +exibirInfo(): void
+    }
+
+    class Revista {
+        -editora: String
+        +getEditora(): String
+        +setEditora(String): void
+        +exibirInfo(): void
+    }
+
+    class Emprestimo {
+        -final id: int
+        -leitor: Leitor
+        -item: Item
+        -devolvido: boolean
+        -$contadorID: int
+        +getId(): int
+        +getLeitor(): Leitor
+        +getItem(): Item
+        +isDevolvido(): boolean
+        +devolver(): void
+        +exibirInfo(): void
+        +$getContadorID(): int
+        +$setContadorID(int): void
+    }
+
+    %% --- Relacionamentos de Herança ---
+    %% Seta aponta da classe filha para a classe mãe
+    Pessoa <|-- Leitor
+    Pessoa <|-- Bibliotecario
+    Item <|-- Livro
+    Item <|-- Revista
+
+    %% --- Relacionamentos de Composição/Agregação ---
+    %% Bibliotecario "possui" e "gerencia" as listas
+    Bibliotecario "1" *-- "0..*" Leitor : gerencia
+    Bibliotecario "1" *-- "0..*" Item : gerencia
+    Bibliotecario "1" *-- "0..*" Emprestimo : registra
+
+    %% --- Relacionamentos de Associação ---
+    %% Emprestimo "conhece" um Leitor e um Item
+    Emprestimo "*" -- "1" Leitor : referente a
+    Emprestimo "*" -- "1" Item : referente a

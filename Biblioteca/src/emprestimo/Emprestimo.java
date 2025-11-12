@@ -11,19 +11,16 @@ public class Emprestimo implements Serializable{
     private boolean devolvido;
 
     public Emprestimo(Leitor leitor, Item item) {
-        this.id = contadorID++;
+        this.id = ++contadorID;
         this.leitor = leitor;
         this.item = item;
         this.devolvido = false;
 
-        // Diminui o número de exemplares disponíveis
         item.setQuantidadeExemplares(item.getQuantidadeExemplares() - 1);
     }
 
-    // ... dentro da classe Emprestimo ...
-    public static int getContadorID() {
-        return contadorID;
-    }
+    public static int getContadorID() {return contadorID;}
+
     public static void setContadorID(int c) {
         contadorID = c;
     }
