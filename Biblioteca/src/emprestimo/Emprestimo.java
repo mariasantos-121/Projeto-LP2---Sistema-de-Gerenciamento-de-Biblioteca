@@ -11,7 +11,7 @@ public class Emprestimo implements Serializable{
     private boolean devolvido;
 
     public Emprestimo(Leitor leitor, Item item) {
-        this.id = contadorID++;
+        this.id = ++contadorID;
         this.leitor = leitor;
         this.item = item;
         this.devolvido = false;

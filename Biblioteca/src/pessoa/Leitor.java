@@ -5,7 +5,7 @@ public class Leitor extends Pessoa {
     private String cpf;
 
     public Leitor(String nome, String cpf) {
-        super(nome, contadorLeitor++);
+        super(nome, ++contadorLeitor);
         this.cpf = cpf;
     }
 

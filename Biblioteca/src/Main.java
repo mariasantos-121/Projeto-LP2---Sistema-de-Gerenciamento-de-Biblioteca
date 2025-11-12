@@ -1,5 +1,5 @@
 import item.*;
-import pessoa.Autor; // <-- ADICIONE ESTA LINHA
+import pessoa.Autor;
 import pessoa.Bibliotecario;
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -17,22 +17,20 @@ public class Main {
             System.out.println("1 - Menu de Leitores");
             System.out.println("2 - Menu de Itens");
             System.out.println("3 - Menu de Empréstimos");
-            System.out.println("4 - Menu de Devoluções");
-            System.out.println("5 - [PERIGO] Resetar Todos os Dados");
-            System.out.println("6 - Menu de Autores");// <-- MUDANÇA
-            System.out.println("7 - Menu de Categorias"); // <-- MUDANÇA
+            System.out.println("4 - Menu de Autores");
+            System.out.println("5 - Menu de Categorias");
+            System.out.println("6 - [PERIGO] Resetar Todos os Dados");
             System.out.println("0 - Sair");
 
-            opcao = lerOpcao(sc, 0, 7); // <-- MUDANÇA (máximo agora é 7)
+            opcao = lerOpcao(sc, 0, 6);
 
             switch (opcao) {
                 case 1 -> menuLeitores(b, sc);
                 case 2 -> menuItens(b, sc);
                 case 3 -> menuEmprestimos(b, sc);
-                case 4 -> b.realizarDevolucao();
-                case 5 -> b.resetarDados();
-                case 6 -> menuAutores(b, sc); // <-- MUDANÇA
-                case 7 -> menuCategorias(b, sc);// <-- MUDANÇA
+                case 4 -> menuAutores(b, sc);
+                case 5 -> menuCategorias(b, sc);
+                case 6 -> b.resetarDados();
                 case 0 -> System.out.println("Encerrando o sistema...");
             }
         } while (opcao != 0);
@@ -51,7 +49,7 @@ public class Main {
             System.out.println("4 - Deletar Leitor");
             System.out.println("0 - Voltar");
 
-            op = lerOpcao(sc, 0, 4); // MUDOU DE 3 PARA 4
+            op = lerOpcao(sc, 0, 4);
 
             switch (op) {
                 case 1 -> b.cadLeitor();
@@ -63,71 +61,22 @@ public class Main {
         } while (op != 0);
     }
 
-    // --- ATUALIZAR menuItens ---
     private static void menuItens(Bibliotecario b, Scanner sc) {
         int op;
         do {
-
             System.out.println("\n--- MENU DE ITENS ---");
-
             System.out.println("1 - Cadastrar Livro");
             System.out.println("2 - Cadastrar Revista");
             System.out.println("3 - Listar Itens");
             System.out.println("4 - Editar Item");
             System.out.println("5 - Deletar Item");
             System.out.println("0 - Voltar");
+
             op = lerOpcao(sc, 0, 5);
 
             switch (op) {
-                case 1 -> { // CADASTRAR LIVRO (MUDOU BASTANTE)
-                    System.out.print("Título: ");
-                    String titulo = sc.nextLine();
-
-                    // Pedir Categoria
-                    System.out.println("--- Selecione a Categoria ---");
-                    b.listarCategorias();
-                    int idCat = lerInteiro(sc, "ID da Categoria: ");
-                    Categoria cat = b.buscarCategoriaPorId(idCat);
-                    if (cat == null) {
-                        System.out.println("Categoria não encontrada. Operação cancelada.");
-                        break;
-                    }
-
-                    // Pedir Autor
-                    System.out.println("--- Selecione o Autor ---");
-                    b.listarAutores();
-                    int idAut = lerInteiro(sc, "ID do Autor: ");
-                    Autor autor = b.buscarAutorPorId(idAut);
-                    if (autor == null) {
-                        System.out.println("Autor não encontrado. Operação cancelada.");
-                        break;
-                    }
-
-                    int qtd = lerInteiro(sc, "Quantidade: ");
-                    // Usar o novo construtor
-                    b.addItem(new Livro(titulo, autor, qtd, cat));
-                }
-                case 2 -> { // CADASTRAR REVISTA (MUDOU)
-                    System.out.print("Título: ");
-                    String titulo = sc.nextLine();
-
-                    // Pedir Categoria
-                    System.out.println("--- Selecione a Categoria ---");
-                    b.listarCategorias();
-                    int idCat = lerInteiro(sc, "ID da Categoria: ");
-                    Categoria cat = b.buscarCategoriaPorId(idCat);
-                    if (cat == null) {
-                        System.out.println("Categoria não encontrada. Operação cancelada.");
-                        break;
-                    }
-
-                    System.out.print("Editora: ");
-                    String editora = sc.nextLine();
-                    int qtd = lerInteiro(sc, "Quantidade: ");
-
-                    // Usar o novo construtor
-                    b.addItem(new Revista(titulo, qtd, editora, cat));
-                }
+                case 1 -> cadastrarNovoLivro(b, sc);
+                case 2 -> cadastrarNovaRevista(b, sc);
                 case 3 -> b.listarItens();
                 case 4 -> b.editarItem();
                 case 5 -> b.deletarItem();
@@ -136,6 +85,114 @@ public class Main {
         } while (op != 0);
     }
 
+    private static void cadastrarNovoLivro(Bibliotecario b, Scanner sc) {
+        System.out.print("Título (ou 'c' para cancelar): ");
+        String titulo = sc.nextLine();
+        if (titulo.equalsIgnoreCase("c")) {
+            System.out.println("Cadastro cancelado.");
+            return;
+        }
+
+        Categoria cat = null;
+        while (cat == null) {
+            System.out.println("\n--- Selecione a Categoria ---");
+            b.listarCategorias();
+            System.out.println("Digite o ID, '0' para CADASTRAR NOVA, ou 'c' para CANCELAR.");
+
+            Integer idCat = lerInteiroCancelavel(sc, "Escolha: ");
+
+            if (idCat == null) {
+                System.out.println("Cadastro cancelado.");
+                return;
+            } else if (idCat == 0) {
+                b.cadastrarCategoria();
+            } else {
+                cat = b.buscarCategoriaPorId(idCat);
+                if (cat == null) {
+                    System.out.println("ID inválido. Tente novamente.");
+                }
+            }
+        }
+        System.out.println("Categoria selecionada: " + cat.getNome());
+
+        Autor autor = null;
+        while (autor == null) {
+            System.out.println("\n--- Selecione o Autor ---");
+            b.listarAutores();
+            System.out.println("Digite o ID, '0' para CADASTRAR NOVO, ou 'c' para CANCELAR.");
+
+            Integer idAut = lerInteiroCancelavel(sc, "Escolha: ");
+
+            if (idAut == null) {
+                System.out.println("Cadastro cancelado.");
+                return;
+            } else if (idAut == 0) {
+                b.cadastrarAutor();
+            } else {
+                autor = b.buscarAutorPorId(idAut);
+                if (autor == null) {
+                    System.out.println("ID inválido. Tente novamente.");
+                }
+            }
+        }
+        System.out.println("Autor selecionado: " + autor.getNome());
+
+
+        Integer qtd = lerInteiroCancelavel(sc, "Quantidade (ou 'c' para cancelar): ");
+        if (qtd == null) {
+            System.out.println("Cadastro cancelado.");
+            return;
+        }
+
+        b.addItem(new Livro(titulo, autor, qtd, cat));
+    }
+
+    private static void cadastrarNovaRevista(Bibliotecario b, Scanner sc) {
+        System.out.print("Título (ou 'c' para cancelar): ");
+        String titulo = sc.nextLine();
+        if (titulo.equalsIgnoreCase("c")) {
+            System.out.println("Cadastro cancelado.");
+            return;
+        }
+
+        Categoria cat = null;
+        while (cat == null) {
+            System.out.println("\n--- Selecione a Categoria ---");
+            b.listarCategorias();
+            System.out.println("Digite o ID, '0' para CADASTRAR NOVA, ou 'c' para CANCELAR.");
+
+            Integer idCat = lerInteiroCancelavel(sc, "Escolha: ");
+
+            if (idCat == null) { // Usuário digitou 'c'
+                System.out.println("Cadastro cancelado.");
+                return;
+            } else if (idCat == 0) { // Usuário digitou '0'
+                b.cadastrarCategoria();
+            } else {
+                cat = b.buscarCategoriaPorId(idCat);
+                if (cat == null) {
+                    System.out.println("ID inválido. Tente novamente.");
+                }
+            }
+        }
+        System.out.println("Categoria selecionada: " + cat.getNome());
+
+
+        System.out.print("Editora (ou 'c' para cancelar): ");
+        String editora = sc.nextLine();
+        if (editora.equalsIgnoreCase("c")) {
+            System.out.println("Cadastro cancelado.");
+            return;
+        }
+
+        Integer qtd = lerInteiroCancelavel(sc, "Quantidade (ou 'c' para cancelar): ");
+        if (qtd == null) {
+            System.out.println("Cadastro cancelado.");
+            return;
+        }
+
+        b.addItem(new Revista(titulo, qtd, editora, cat));
+    }
 
     private static void menuEmprestimos(Bibliotecario b, Scanner sc) {
         int op;
@@ -143,13 +200,15 @@ public class Main {
             System.out.println("\n--- MENU DE EMPRÉSTIMOS ---");
             System.out.println("1 - Realizar Empréstimo");
             System.out.println("2 - Listar Empréstimos");
+            System.out.println("3 - Realizar Devolução");
             System.out.println("0 - Voltar");
 
-            op = lerOpcao(sc, 0, 2);
+            op = lerOpcao(sc, 0, 3);
 
             switch (op) {
                 case 1 -> b.realizarEmprestimo();
                 case 2 -> b.listarEmprestimos();
+                case 3 -> b.realizarDevolucao();
                 case 0 -> System.out.println("↩ Voltando...");
             }
         } while (op != 0);
@@ -199,35 +258,7 @@ public class Main {
         } while (op != 0);
     }
 
-    private static void menuCadastrosGerais(Bibliotecario b, Scanner sc) {
-        int op;
-        do {
-            System.out.println("\n--- CADASTROS GERAIS ---");
-            System.out.println("1 - Cadastrar Autor");
-            System.out.println("2 - Listar Autores");
-            System.out.println("3 - Editar Autor");        // NOVO
-            System.out.println("4 - Deletar Autor");       // NOVO
-            System.out.println("5 - Cadastrar Categoria");
-            System.out.println("6 - Listar Categorias");
-            System.out.println("7 - Editar Categoria");    // NOVO
-            System.out.println("8 - Deletar Categoria");   // NOVO
-            System.out.println("0 - Voltar");
 
-            op = lerOpcao(sc, 0, 8); // ATUALIZAR O MÁXIMO PARA 8
-
-            switch (op) {
-                case 1 -> b.cadastrarAutor();
-                case 2 -> b.listarAutores();
-                case 3 -> b.editarAutor();        // NOVO
-                case 4 -> b.deletarAutor();       // NOVO
-                case 5 -> b.cadastrarCategoria();
-                case 6 -> b.listarCategorias();
-                case 7 -> b.editarCategoria();    // NOVO
-                case 8 -> b.deletarCategoria();   // NOVO
-                case 0 -> System.out.println("↩ Voltando...");
-            }
-        } while (op != 0);
-    }
     private static int lerOpcao(Scanner sc, int min, int max) {
         int opcao;
         while (true) {
@@ -255,6 +286,23 @@ public class Main {
             } catch (InputMismatchException e) {
                 System.out.println("Entrada inválida! Digite um número inteiro.");
                 sc.nextLine();
+            }
+        }
+    }
+
+    private static Integer lerInteiroCancelavel(Scanner sc, String mensagem) {
+        while (true) {
+            System.out.print(mensagem);
+            String input = sc.nextLine();
+
+            if (input.equalsIgnoreCase("c")) {
+                return null;
+            }
+
+            try {
+                return Integer.parseInt(input);
+            } catch (NumberFormatException e) {
+                System.out.println("Entrada inválida! Digite um número ou 'c' para cancelar.");
             }
         }
     }

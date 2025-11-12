@@ -8,7 +8,7 @@ public class Autor implements Serializable {
     private String nome;
 
     public Autor(String nome) {
-        this.id = contadorID++;
+        this.id = ++contadorID;
         this.nome = nome;
     }
 

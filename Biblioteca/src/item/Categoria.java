@@ -8,7 +8,7 @@ public class Categoria implements Serializable {
     private String nome;
 
     public Categoria(String nome) {
-        this.id = contadorID++;
+        this.id = ++contadorID;
         this.nome = nome;
     }
 

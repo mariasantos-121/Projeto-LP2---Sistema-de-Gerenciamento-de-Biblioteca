@@ -2,15 +2,17 @@ package pessoa;
 
 import emprestimo.Emprestimo;
 import item.Item;
-import item.Categoria; // IMPORTAR
-import item.Livro;    // IMPORTAR
-import item.Revista;  // IMPORTAR
+import item.Categoria;
+import item.Livro;
+import item.Revista;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
-import java.io.*; // Importa todas as classes de Input/Output
+import java.io.*;
 
 public class Bibliotecario extends Pessoa {
+
+    // --- ATRIBUTOS ---
     private static int contadorBibliotecario = 1;
     private ArrayList<Leitor> leitores;
     private ArrayList<Autor> autores;
@@ -19,6 +21,7 @@ public class Bibliotecario extends Pessoa {
     private ArrayList<Emprestimo> emprestimos;
     private Scanner sc = new Scanner(System.in);
 
+    // --- CONSTRUTOR ---
     public Bibliotecario(String nome) {
         super(nome, contadorBibliotecario++);
         this.leitores = new ArrayList<>();
@@ -28,14 +31,24 @@ public class Bibliotecario extends Pessoa {
         this.categorias = new ArrayList<>();
     }
 
+    // --- 1. MÉTODOS DE LEITOR ---
     public void cadLeitor() {
-        System.out.print("Digite o nome do Leitor: ");
+        System.out.print("Digite o nome do Leitor (ou 'c' para cancelar): ");
         String nome = sc.nextLine();
+        if (nome.equalsIgnoreCase("c")) {
+            System.out.println("Cadastro cancelado.");
+            return;
+        }
 
         String cpf;
         while (true) {
-            System.out.print("Digite o CPF (somente números): ");
+            System.out.print("Digite o CPF (ou 'c' para cancelar): ");
             cpf = sc.nextLine();
+
+            if (cpf.equalsIgnoreCase("c")) {
+                System.out.println("Cadastro cancelado.");
+                return;
+            }
 
             if (validarCPF(cpf)) {
                 break;
@@ -54,136 +67,10 @@ public class Bibliotecario extends Pessoa {
             System.out.println("Ainda não há leitores cadastrados.");
             return;
         }
-        for(Leitor l : leitores){
+        for (Leitor l : leitores) {
             l.exibirInfo();
             System.out.println("-----------------------------");
         }
-    }
-
-    public Leitor buscaID(int id) {
-        for (Leitor leitor : leitores) {
-            if (leitor.getId() == id) {
-                return leitor;
-            }
-        }
-        return null;
-    }
-
-    // --- NOVOS MÉTODOS PARA AUTOR ---
-    public void cadastrarAutor() {
-        System.out.print("Nome do Autor: ");
-        String nome = sc.nextLine();
-        Autor novoAutor = new Autor(nome);
-        autores.add(novoAutor);
-        System.out.println("Autor cadastrado com sucesso! ID: " + novoAutor.getId());
-    }
-
-    public void listarAutores() {
-        if (autores.isEmpty()) {
-            System.out.println("Nenhum autor cadastrado.");
-            return;
-        }
-        for (Autor a : autores) {
-            System.out.println("ID: " + a.getId() + " | Nome: " + a.getNome());
-        }
-    }
-
-    public Autor buscarAutorPorId(int id) {
-        for (Autor a : autores) {
-            if (a.getId() == id) {
-                return a;
-            }
-        }
-        return null;
-    }
-
-    // --- NOVOS MÉTODOS PARA CATEGORIA ---
-    public void cadastrarCategoria() {
-        System.out.print("Nome da Categoria: ");
-        String nome = sc.nextLine();
-        Categoria novaCat = new Categoria(nome);
-        categorias.add(novaCat);
-        System.out.println("Categoria cadastrada com sucesso! ID: " + novaCat.getId());
-    }
-
-    public void listarCategorias() {
-        if (categorias.isEmpty()) {
-            System.out.println("Nenhuma categoria cadastrada.");
-            return;
-        }
-        for (Categoria c : categorias) {
-            System.out.println("ID: " + c.getId() + " | Nome: " + c.getNome());
-        }
-    }
-
-    public Categoria buscarCategoriaPorId(int id) {
-        for (Categoria c : categorias) {
-            if (c.getId() == id) {
-                return c;
-            }
-        }
-        return null;
-    }
-
-    public Leitor autenticarLeitor() {
-        if (leitores.isEmpty()) {
-            System.out.println("Nenhum leitor cadastrado ainda.");
-            return null;
-        }
-
-        Leitor leitor = null;
-        while (leitor == null) {
-            int idLeitor = lerInteiro("Informe o ID do leitor: ");
-            leitor = buscaID(idLeitor);
-
-            if (leitor == null) {
-                System.out.println("ID não encontrado. Tente novamente.");
-                continue;
-            }
-
-            String cpf;
-            while (true) {
-                System.out.print("Digite o CPF para confirmação: ");
-                cpf = sc.nextLine();
-
-                if (!validarCPF(cpf)) {
-                    System.out.println("CPF inválido! Digite um CPF real com 11 dígitos válidos.");
-                    continue;
-                }
-
-                if (cpf.equals(leitor.getCpf())) {
-                    System.out.println("Olá, " + leitor.getNome() + "!");
-                    return leitor;
-                } else {
-                    System.out.println("CPF não corresponde ao cadastro. Tente novamente.");
-                }
-            }
-        }
-        return leitor;
-    }
-
-    public void addItem(Item item) {
-        itens.add(item);
-        System.out.println("Item adicionado com sucesso! ID: " + item.getId());
-    }
-
-    public void listarItens() {
-        if (itens.isEmpty()) {
-            System.out.println("Nenhum item cadastrado.");
-            return;
-        }
-        for (Item i : itens) {
-            i.exibirInfo();
-        }
-    }
-
-    public Item buscarItemPorId(int id) {
-        for (Item item : itens) {
-            if (item.getId() == id) {
-                return item;
-            }
-        }
-        return null;
     }
 
     public void editarLeitor() {
@@ -238,12 +125,257 @@ public class Bibliotecario extends Pessoa {
             }
             default -> System.out.println("Opção inválida.");
         }
-
         salvarDados(); // Salva as alterações
     }
 
-    // --- ATUALIZAR editarItem() (IMPORTANTE!) ---
-    // (O método antigo vai quebrar, pois autor não é mais String)
+    public void deletarLeitor() {
+        if (leitores.isEmpty()) {
+            System.out.println("Não há leitores para deletar.");
+            return;
+        }
+
+        System.out.println("--- Lista de Leitores ---");
+        listLeitores();
+
+        int idLeitor = lerInteiro("Digite o ID do leitor que deseja DELETAR: ");
+        Leitor leitor = buscaID(idLeitor);
+
+        if (leitor == null) {
+            System.out.println("Leitor não encontrado.");
+            return;
+        }
+
+        // VERIFICAÇÃO DE DEPENDÊNCIA
+        for (Emprestimo emp : emprestimos) {
+            if (emp.getLeitor().equals(leitor) && !emp.isDevolvido()) {
+                System.out.println("ERRO: Este leitor possui um empréstimo ativo (ID: " + emp.getId() + ").");
+                System.out.println("Realize a devolução antes de deletar o leitor.");
+                return;
+            }
+        }
+
+        // CONFIRMAÇÃO
+        System.out.print("Tem certeza que deseja deletar o leitor: " + leitor.getNome() + " (ID: " + leitor.getId() + ")? (s/n): ");
+        String confirmacao = sc.nextLine();
+
+        if (confirmacao.equalsIgnoreCase("s")) {
+            leitores.remove(leitor); // Remove da lista
+            salvarDados(); // Salva a alteração no arquivo
+            System.out.println("Leitor deletado com sucesso.");
+        } else {
+            System.out.println("Operação cancelada.");
+        }
+    }
+
+    public Leitor buscaID(int id) {
+        for (Leitor leitor : leitores) {
+            if (leitor.getId() == id) {
+                return leitor;
+            }
+        }
+        return null;
+    }
+
+    // --- 2. MÉTODOS DE AUTOR ---
+    public void cadastrarAutor() {
+        System.out.print("Nome do Autor (ou 'c' para cancelar): ");
+        String nome = sc.nextLine();
+        if (nome.equalsIgnoreCase("c")) {
+            System.out.println("Cadastro cancelado.");
+            return;
+        }
+        Autor novoAutor = new Autor(nome);
+        autores.add(novoAutor);
+        System.out.println("Autor cadastrado com sucesso! ID: " + novoAutor.getId());
+    }
+
+    public void listarAutores() {
+        if (autores.isEmpty()) {
+            System.out.println("Nenhum autor cadastrado.");
+            return;
+        }
+        for (Autor a : autores) {
+            System.out.println("ID: " + a.getId() + " | Nome: " + a.getNome());
+        }
+    }
+
+    public void editarAutor() {
+        if (autores.isEmpty()) {
+            System.out.println("Nenhum autor para editar.");
+            return;
+        }
+
+        System.out.println("--- Lista de Autores ---");
+        listarAutores();
+        int idAut = lerInteiro("Digite o ID do autor que deseja EDITAR: ");
+        Autor autor = buscarAutorPorId(idAut);
+
+        if (autor == null) {
+            System.out.println("Autor não encontrado.");
+            return;
+        }
+
+        System.out.print("Digite o novo nome para '" + autor.getNome() + "': ");
+        String novoNome = sc.nextLine();
+        autor.setNome(novoNome);
+        salvarDados();
+        System.out.println("Autor atualizado com sucesso!");
+    }
+
+    public void deletarAutor() {
+        if (autores.isEmpty()) {
+            System.out.println("Nenhum autor para deletar.");
+            return;
+        }
+
+        System.out.println("--- Lista de Autores ---");
+        listarAutores();
+        int idAut = lerInteiro("Digite o ID do autor que deseja DELETAR: ");
+        Autor autor = buscarAutorPorId(idAut);
+
+        if (autor == null) {
+            System.out.println("Autor não encontrado.");
+            return;
+        }
+
+        // VERIFICAÇÃO DE DEPENDÊNCIA
+        for (Item item : this.itens) {
+            if (item instanceof item.Livro livro) {
+                if (livro.getAutor().equals(autor)) {
+                    System.out.println("ERRO: Este autor está associado ao livro '" + livro.getTitulo() + "'.");
+                    System.out.println("Não é possível deletar.");
+                    return;
+                }
+            }
+        }
+
+        // Confirmação
+        System.out.print("Tem certeza que deseja deletar o autor: " + autor.getNome() + "? (s/n): ");
+        if (sc.nextLine().equalsIgnoreCase("s")) {
+            autores.remove(autor);
+            salvarDados();
+            System.out.println("Autor deletado com sucesso.");
+        } else {
+            System.out.println("Operação cancelada.");
+        }
+    }
+
+    public Autor buscarAutorPorId(int id) {
+        for (Autor a : autores) {
+            if (a.getId() == id) {
+                return a;
+            }
+        }
+        return null;
+    }
+
+    // --- 3. MÉTODOS DE CATEGORIA ---
+    public void cadastrarCategoria() {
+        System.out.print("Nome da Categoria (ou 'c' para cancelar): ");
+        String nome = sc.nextLine();
+        if (nome.equalsIgnoreCase("c")) {
+            System.out.println("Cadastro cancelado.");
+            return;
+        }
+        Categoria novaCat = new Categoria(nome);
+        categorias.add(novaCat);
+        System.out.println("Categoria cadastrada com sucesso! ID: " + novaCat.getId());
+    }
+
+    public void listarCategorias() {
+        if (categorias.isEmpty()) {
+            System.out.println("Nenhuma categoria cadastrada.");
+            return;
+        }
+        for (Categoria c : categorias) {
+            System.out.println("ID: " + c.getId() + " | Nome: " + c.getNome());
+        }
+    }
+
+    public void editarCategoria() {
+        if (categorias.isEmpty()) {
+            System.out.println("Nenhuma categoria para editar.");
+            return;
+        }
+
+        System.out.println("--- Lista de Categorias ---");
+        listarCategorias();
+        int idCat = lerInteiro("Digite o ID da categoria que deseja EDITAR: ");
+        Categoria cat = buscarCategoriaPorId(idCat);
+
+        if (cat == null) {
+            System.out.println("Categoria não encontrada.");
+            return;
+        }
+
+        System.out.print("Digite o novo nome para '" + cat.getNome() + "': ");
+        String novoNome = sc.nextLine();
+        cat.setNome(novoNome);
+        salvarDados();
+        System.out.println("Categoria atualizada com sucesso!");
+    }
+
+    public void deletarCategoria() {
+        if (categorias.isEmpty()) {
+            System.out.println("Nenhuma categoria para deletar.");
+            return;
+        }
+
+        System.out.println("--- Lista de Categorias ---");
+        listarCategorias();
+        int idCat = lerInteiro("Digite o ID da categoria que deseja DELETAR: ");
+        Categoria cat = buscarCategoriaPorId(idCat);
+
+        if (cat == null) {
+            System.out.println("Categoria não encontrada.");
+            return;
+        }
+
+        // VERIFICAÇÃO DE DEPENDÊNCIA
+        for (Item item : this.itens) {
+            if (item.getCategoria().equals(cat)) {
+                System.out.println("ERRO: Esta categoria está associada ao item '" + item.getTitulo() + "'.");
+                System.out.println("Não é possível deletar.");
+                return;
+            }
+        }
+
+        // Confirmação
+        System.out.print("Tem certeza que deseja deletar a categoria: " + cat.getNome() + "? (s/n): ");
+        if (sc.nextLine().equalsIgnoreCase("s")) {
+            categorias.remove(cat);
+            salvarDados();
+            System.out.println("Categoria deletada com sucesso.");
+        } else {
+            System.out.println("Operação cancelada.");
+        }
+    }
+
+    public Categoria buscarCategoriaPorId(int id) {
+        for (Categoria c : categorias) {
+            if (c.getId() == id) {
+                return c;
+            }
+        }
+        return null;
+    }
+
+    // --- 4. MÉTODOS DE ITEM ---
+    public void addItem(Item item) {
+        itens.add(item);
+        System.out.println("Item adicionado com sucesso! ID: " + item.getId());
+    }
+
+    public void listarItens() {
+        if (itens.isEmpty()) {
+            System.out.println("Nenhum item cadastrado.");
+            return;
+        }
+        for (Item i : itens) {
+            i.exibirInfo();
+        }
+    }
+
     public void editarItem() {
         if (itens.isEmpty()) {
             System.out.println("Não há itens para editar.");
@@ -277,8 +409,14 @@ public class Bibliotecario extends Pessoa {
         int opcao = lerInteiro("Escolha: ");
 
         switch (opcao) {
-            case 1 -> { /* ... (igual - Título) ... */ }
-            case 2 -> { /* ... (igual - Quantidade) ... */ }
+            case 1 -> {
+                System.out.print("Digite o novo título: ");
+                item.setTitulo(sc.nextLine());
+            }
+            case 2 -> {
+                System.out.print("Digite a nova quantidade: ");
+                item.setQuantidadeExemplares(lerInteiro(""));
+            }
             case 3 -> { // NOVO CASO: EDITAR CATEGORIA
                 System.out.println("--- Categorias Disponíveis ---");
                 listarCategorias();
@@ -312,12 +450,103 @@ public class Bibliotecario extends Pessoa {
                     return;
                 }
             }
-            case 0 -> { /* ... (igual - Cancelar) ... */ }
-            default -> { /* ... (igual - Default) ... */ }
+            case 0 -> {
+                System.out.println("Edição cancelada.");
+                return;
+            }
+            default -> {
+                System.out.println("Opção inválida.");
+                return;
+            }
         }
-
         System.out.println("Item atualizado com sucesso!");
         salvarDados();
+    }
+
+    public void deletarItem() {
+        if (itens.isEmpty()) {
+            System.out.println("Não há itens para deletar.");
+            return;
+        }
+
+        System.out.println("--- Lista de Itens ---");
+        listarItens();
+
+        int idItem = lerInteiro("Digite o ID do item que deseja DELETAR: ");
+        Item item = buscarItemPorId(idItem);
+
+        if (item == null) {
+            System.out.println("Item não encontrado.");
+            return;
+        }
+
+        // VERIFICAÇÃO DE DEPENDÊNCIA
+        for (Emprestimo emp : emprestimos) {
+            if (emp.getItem().equals(item) && !emp.isDevolvido()) {
+                System.out.println("ERRO: Este item está atualmente emprestado (Empréstimo ID: " + emp.getId() + ").");
+                System.out.println("Realize a devolução antes de deletar o item.");
+                return;
+            }
+        }
+
+        // CONFIRMAÇÃO
+        System.out.print("Tem certeza que deseja deletar o item: " + item.getTitulo() + " (ID: " + item.getId() + ")? (s/n): ");
+        String confirmacao = sc.nextLine();
+
+        if (confirmacao.equalsIgnoreCase("s")) {
+            itens.remove(item); // Remove da lista
+            salvarDados(); // Salva a alteração no arquivo
+            System.out.println("Item deletado com sucesso.");
+        } else {
+            System.out.println("Operação cancelada.");
+        }
+    }
+
+    public Item buscarItemPorId(int id) {
+        for (Item item : itens) {
+            if (item.getId() == id) {
+                return item;
+            }
+        }
+        return null;
+    }
+
+    // --- 5. MÉTODOS DE LÓGICA DE NEGÓCIO (Empréstimo/Devolução) ---
+    public Leitor autenticarLeitor() {
+        if (leitores.isEmpty()) {
+            System.out.println("Nenhum leitor cadastrado ainda.");
+            return null;
+        }
+
+        Leitor leitor = null;
+        while (leitor == null) {
+            int idLeitor = lerInteiro("Informe o ID do leitor: ");
+            leitor = buscaID(idLeitor);
+
+            if (leitor == null) {
+                System.out.println("ID não encontrado. Tente novamente.");
+                continue;
+            }
+
+            String cpf;
+            while (true) {
+                System.out.print("Digite o CPF para confirmação: ");
+                cpf = sc.nextLine();
+
+                if (!validarCPF(cpf)) {
+                    System.out.println("CPF inválido! Digite um CPF real com 11 dígitos válidos.");
+                    continue;
+                }
+
+                if (cpf.equals(leitor.getCpf())) {
+                    System.out.println("Olá, " + leitor.getNome() + "!");
+                    return leitor;
+                } else {
+                    System.out.println("CPF não corresponde ao cadastro. Tente novamente.");
+                }
+            }
+        }
+        return leitor;
     }
 
     public void realizarEmprestimo() {
@@ -403,128 +632,96 @@ public class Bibliotecario extends Pessoa {
         emprestimo.devolver();
     }
 
-    // ... (depois do método selecionarOuCriarCategoria()) ...
+    // --- 6. MÉTODOS DE PERSISTÊNCIA E SISTEMA ---
+    public void resetarDados() {
+        // 1. Pede a confirmação
+        System.out.print("TEM CERTEZA? Isso apagará TODOS os dados salvos permanentemente. (s/n): ");
+        String confirmacao = sc.nextLine(); // Usa o Scanner da classe
 
-    public void editarAutor() {
-        if (autores.isEmpty()) {
-            System.out.println("Nenhum autor para editar.");
-            return;
-        }
+        // 2. Verifica a resposta
+        if (confirmacao.equalsIgnoreCase("s")) {
+            // 3. Se for "s" (ou "S"), executa a lógica original
+            this.leitores.clear();
+            this.itens.clear();
+            this.emprestimos.clear();
+            this.autores.clear();
+            this.categorias.clear();
 
-        System.out.println("--- Lista de Autores ---");
-        listarAutores();
-        int idAut = lerInteiro("Digite o ID do autor que deseja EDITAR: ");
-        Autor autor = buscarAutorPorId(idAut);
+            Item.setContadorID(0);
+            Leitor.setContadorLeitor(0);
+            Emprestimo.setContadorID(0);
+            Autor.setContadorID(0);
+            Categoria.setContadorID(0);
 
-        if (autor == null) {
-            System.out.println("Autor não encontrado.");
-            return;
-        }
-
-        System.out.print("Digite o novo nome para '" + autor.getNome() + "': ");
-        String novoNome = sc.nextLine();
-        autor.setNome(novoNome);
-        salvarDados();
-        System.out.println("Autor atualizado com sucesso!");
-    }
-
-    public void deletarAutor() {
-        if (autores.isEmpty()) {
-            System.out.println("Nenhum autor para deletar.");
-            return;
-        }
-
-        System.out.println("--- Lista de Autores ---");
-        listarAutores();
-        int idAut = lerInteiro("Digite o ID do autor que deseja DELETAR: ");
-        Autor autor = buscarAutorPorId(idAut);
-
-        if (autor == null) {
-            System.out.println("Autor não encontrado.");
-            return;
-        }
-
-        // VERIFICAÇÃO DE DEPENDÊNCIA
-        for (Item item : this.itens) {
-            if (item instanceof item.Livro livro) { // Java 17+
-                if (livro.getAutor().equals(autor)) {
-                    System.out.println("ERRO: Este autor está associado ao livro '" + livro.getTitulo() + "'.");
-                    System.out.println("Não é possível deletar.");
-                    return;
-                }
-            }
-        }
-
-        // Confirmação
-        System.out.print("Tem certeza que deseja deletar o autor: " + autor.getNome() + "? (s/n): ");
-        if (sc.nextLine().equalsIgnoreCase("s")) {
-            autores.remove(autor);
             salvarDados();
-            System.out.println("Autor deletado com sucesso.");
+            System.out.println(">>> DADOS DA BIBLIOTECA RESETADOS COM SUCESSO! <<<");
+
         } else {
-            System.out.println("Operação cancelada.");
+            // 4. Se for qualquer outra coisa, cancela
+            System.out.println("Operação de reset CANCELADA.");
         }
     }
 
-    public void editarCategoria() {
-        if (categorias.isEmpty()) {
-            System.out.println("Nenhuma categoria para editar.");
-            return;
-        }
+    public void salvarDados() {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("biblioteca.dat"))) {
+            // Salva os contadores estáticos
+            oos.writeInt(Item.getContadorID());
+            oos.writeInt(Leitor.getContadorLeitor());
+            oos.writeInt(Emprestimo.getContadorID());
+            oos.writeInt(Autor.getContadorID());
+            oos.writeInt(Categoria.getContadorID());
 
-        System.out.println("--- Lista de Categorias ---");
-        listarCategorias();
-        int idCat = lerInteiro("Digite o ID da categoria que deseja EDITAR: ");
-        Categoria cat = buscarCategoriaPorId(idCat);
+            // Salva as listas
+            oos.writeObject(leitores);
+            oos.writeObject(itens);
+            oos.writeObject(emprestimos);
+            oos.writeObject(autores);
+            oos.writeObject(categorias);
 
-        if (cat == null) {
-            System.out.println("Categoria não encontrada.");
-            return;
-        }
-
-        System.out.print("Digite o novo nome para '" + cat.getNome() + "': ");
-        String novoNome = sc.nextLine();
-        cat.setNome(novoNome);
-        salvarDados();
-        System.out.println("Categoria atualizada com sucesso!");
-    }
-
-    public void deletarCategoria() {
-        if (categorias.isEmpty()) {
-            System.out.println("Nenhuma categoria para deletar.");
-            return;
-        }
-
-        System.out.println("--- Lista de Categorias ---");
-        listarCategorias();
-        int idCat = lerInteiro("Digite o ID da categoria que deseja DELETAR: ");
-        Categoria cat = buscarCategoriaPorId(idCat);
-
-        if (cat == null) {
-            System.out.println("Categoria não encontrada.");
-            return;
-        }
-
-        // VERIFICAÇÃO DE DEPENDÊNCIA
-        for (Item item : this.itens) {
-            if (item.getCategoria().equals(cat)) {
-                System.out.println("ERRO: Esta categoria está associada ao item '" + item.getTitulo() + "'.");
-                System.out.println("Não é possível deletar.");
-                return;
-            }
-        }
-
-        // Confirmação
-        System.out.print("Tem certeza que deseja deletar a categoria: " + cat.getNome() + "? (s/n): ");
-        if (sc.nextLine().equalsIgnoreCase("s")) {
-            categorias.remove(cat);
-            salvarDados();
-            System.out.println("Categoria deletada com sucesso.");
-        } else {
-            System.out.println("Operação cancelada.");
+            System.out.println("Dados salvos com sucesso em biblioteca.dat");
+        } catch (IOException e) {
+            System.out.println("Erro ao salvar dados: " + e.getMessage());
         }
     }
 
+    @SuppressWarnings("unchecked")
+    public void carregarDados() {
+        File arquivo = new File("biblioteca.dat");
+        if (!arquivo.exists()) {
+            System.out.println("Arquivo de dados não encontrado. Começando com novos dados.");
+            return;
+        }
+
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(arquivo))) {
+            // Carrega os contadores estáticos (NA MESMA ORDEM que salvou)
+            Item.setContadorID(ois.readInt());
+            Leitor.setContadorLeitor(ois.readInt());
+            Emprestimo.setContadorID(ois.readInt());
+            Autor.setContadorID(ois.readInt());
+            Categoria.setContadorID(ois.readInt());
+
+            // Carrega as listas (NA MESMA ORDEM que salvou)
+            this.leitores = (ArrayList<Leitor>) ois.readObject();
+            this.itens = (ArrayList<Item>) ois.readObject();
+            this.emprestimos = (ArrayList<Emprestimo>) ois.readObject();
+            this.autores = (ArrayList<Autor>) ois.readObject();
+            this.categorias = (ArrayList<Categoria>) ois.readObject();
+
+            System.out.println("Dados carregados com sucesso de biblioteca.dat");
+        } catch (FileNotFoundException e) {
+            System.out.println("Arquivo de dados não encontrado.");
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println("Erro ao carregar dados: " + e.getMessage());
+            // Zera TUDO se der erro
+            this.leitores = new ArrayList<>();
+            this.itens = new ArrayList<>();
+            this.emprestimos = new ArrayList<>();
+            this.autores = new ArrayList<>();
+            this.categorias = new ArrayList<>();
+        }
+    }
+
+    // --- 7. MÉTODOS PRIVADOS UTILITÁRIOS ---
     private int lerInteiro(String mensagem) {
         int numero;
         while (true) {
@@ -567,194 +764,13 @@ public class Bibliotecario extends Pessoa {
             return false;
         }
     }
-    /**
-     * Limpa todos os dados da memória e salva esse estado "vazio" no arquivo.
-     */
-    /**
-     * Limpa todos os dados da memória e salva esse estado "vazio" no arquivo.
-     */
-    public void resetarDados() {
-        // 1. Pede a confirmação
-        System.out.print("TEM CERTEZA? Isso apagará TODOS os dados salvos permanentemente. (s/n): ");
-        String confirmacao = sc.nextLine(); // Usa o Scanner da classe
 
-        // 2. Verifica a resposta
-        if (confirmacao.equalsIgnoreCase("s")) {
-            // 3. Se for "s" (ou "S"), executa a lógica original
-            this.leitores.clear();
-            this.itens.clear();
-            this.emprestimos.clear();
-            this.autores.clear(); // <-- ADICIONADO
-            this.categorias.clear(); // <-- ADICIONADO
-
-            Item.setContadorID(0);
-            Leitor.setContadorLeitor(0);
-            Emprestimo.setContadorID(0);
-            Autor.setContadorID(0); // <-- ADICIONADO
-            Categoria.setContadorID(0); // <-- ADICIONADO
-
-            salvarDados();
-            System.out.println(">>> DADOS DA BIBLIOTECA RESETADOS COM SUCESSO! <<<");
-
-        } else {
-            // 4. Se for qualquer outra coisa, cancela
-            System.out.println("Operação de reset CANCELADA.");
-        }
-    }
-
-    /**
-     * Salva o estado atual das listas e contadores em um arquivo.
-     */
-    public void salvarDados() {
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("biblioteca.dat"))) {
-            // Salva os contadores estáticos
-            oos.writeInt(Item.getContadorID());
-            oos.writeInt(Leitor.getContadorLeitor());
-            oos.writeInt(Emprestimo.getContadorID());
-            oos.writeInt(Autor.getContadorID());      // NOVO
-            oos.writeInt(Categoria.getContadorID());  // NOVO
-
-            // Salva as listas
-            oos.writeObject(leitores);
-            oos.writeObject(itens);
-            oos.writeObject(emprestimos);
-            oos.writeObject(autores);                 // NOVO
-            oos.writeObject(categorias);              // NOVO
-
-            System.out.println("Dados salvos com sucesso em biblioteca.dat");
-        } catch (IOException e) {
-            System.out.println("Erro ao salvar dados: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Carrega o estado das listas e contadores do arquivo.
-     */
-// --- ATUALIZAR carregarDados() ---
-    @SuppressWarnings("unchecked")
-    public void carregarDados() {
-        File arquivo = new File("biblioteca.dat");
-        if (!arquivo.exists()) {
-            System.out.println("Arquivo de dados não encontrado. Começando com novos dados.");
-            return;
-        }
-
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(arquivo))) {
-            // Carrega os contadores estáticos (NA MESMA ORDEM que salvou)
-            Item.setContadorID(ois.readInt());
-            Leitor.setContadorLeitor(ois.readInt());
-            Emprestimo.setContadorID(ois.readInt());
-            Autor.setContadorID(ois.readInt());         // NOVO
-            Categoria.setContadorID(ois.readInt());     // NOVO
-
-            // Carrega as listas (NA MESMA ORDEM que salvou)
-            this.leitores = (ArrayList<Leitor>) ois.readObject();
-            this.itens = (ArrayList<Item>) ois.readObject();
-            this.emprestimos = (ArrayList<Emprestimo>) ois.readObject();
-            this.autores = (ArrayList<Autor>) ois.readObject();          // NOVO
-            this.categorias = (ArrayList<Categoria>) ois.readObject();   // NOVO
-
-            System.out.println("Dados carregados com sucesso de biblioteca.dat");
-        } catch (FileNotFoundException e) { /*...*/ }
-        catch (IOException | ClassNotFoundException e) {
-            System.out.println("Erro ao carregar dados: " + e.getMessage());
-            // Zera TUDO se der erro
-            this.leitores = new ArrayList<>();
-            this.itens = new ArrayList<>();
-            this.emprestimos = new ArrayList<>();
-            this.autores = new ArrayList<>();         // NOVO
-            this.categorias = new ArrayList<>();      // NOVO
-        }
-    }
-
-    // ... (dentro da classe Bibliotecario) ...
-
-    public void deletarLeitor() {
-        if (leitores.isEmpty()) {
-            System.out.println("Não há leitores para deletar.");
-            return;
-        }
-
-        System.out.println("--- Lista de Leitores ---");
-        listLeitores();
-
-        int idLeitor = lerInteiro("Digite o ID do leitor que deseja DELETAR: ");
-        Leitor leitor = buscaID(idLeitor);
-
-        if (leitor == null) {
-            System.out.println("Leitor não encontrado.");
-            return;
-        }
-
-        // VERIFICAÇÃO DE DEPENDÊNCIA
-        for (Emprestimo emp : emprestimos) {
-            if (emp.getLeitor().equals(leitor) && !emp.isDevolvido()) {
-                System.out.println("ERRO: Este leitor possui um empréstimo ativo (ID: " + emp.getId() + ").");
-                System.out.println("Realize a devolução antes de deletar o leitor.");
-                return;
-            }
-        }
-
-        // CONFIRMAÇÃO
-        System.out.print("Tem certeza que deseja deletar o leitor: " + leitor.getNome() + " (ID: " + leitor.getId() + ")? (s/n): ");
-        String confirmacao = sc.nextLine();
-
-        if (confirmacao.equalsIgnoreCase("s")) {
-            leitores.remove(leitor); // Remove da lista
-            salvarDados(); // Salva a alteração no arquivo
-            System.out.println("Leitor deletado com sucesso.");
-        } else {
-            System.out.println("Operação cancelada.");
-        }
-    }
-
-    public void deletarItem() {
-        if (itens.isEmpty()) {
-            System.out.println("Não há itens para deletar.");
-            return;
-        }
-
-        System.out.println("--- Lista de Itens ---");
-        listarItens();
-
-        int idItem = lerInteiro("Digite o ID do item que deseja DELETAR: ");
-        Item item = buscarItemPorId(idItem);
-
-        if (item == null) {
-            System.out.println("Item não encontrado.");
-            return;
-        }
-
-        // VERIFICAÇÃO DE DEPENDÊNCIA
-        for (Emprestimo emp : emprestimos) {
-            if (emp.getItem().equals(item) && !emp.isDevolvido()) {
-                System.out.println("ERRO: Este item está atualmente emprestado (Empréstimo ID: " + emp.getId() + ").");
-                System.out.println("Realize a devolução antes de deletar o item.");
-                return;
-            }
-        }
-
-        // CONFIRMAÇÃO
-        System.out.print("Tem certeza que deseja deletar o item: " + item.getTitulo() + " (ID: " + item.getId() + ")? (s/n): ");
-        String confirmacao = sc.nextLine();
-
-        if (confirmacao.equalsIgnoreCase("s")) {
-            itens.remove(item); // Remove da lista
-            salvarDados(); // Salva a alteração no arquivo
-            System.out.println("Item deletado com sucesso.");
-        } else {
-            System.out.println("Operação cancelada.");
-        }
-    }
-
+    // --- 8. MÉTODOS SOBRESCRITOS (@Override) ---
     @Override
-    public void exibirInfo(){
+    public void exibirInfo() {
         System.out.println("--- Informacoes Bibliotecario ---");
         System.out.println("ID: " + getId());
         System.out.println("Nome: " + getNome());
-        System.out.println("Status: Gerenciando " + leitores.size() + " leitores e " + itens.size() + " itens.");
+        System.out.println("Status: Gerenciando " + leitores.size() + " leitores e " + itens.size() + " itens.");
     }
-
 }
-
-
