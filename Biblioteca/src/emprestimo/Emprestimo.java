@@ -9,12 +9,14 @@ public class Emprestimo implements Serializable{
     private Leitor leitor;
     private Item item;
     private boolean devolvido;
+    private String dataPrevista;
 
-    public Emprestimo(Leitor leitor, Item item) {
+    public Emprestimo(Leitor leitor, Item item, String dataPrevista) {
         this.id = ++contadorID;
         this.leitor = leitor;
         this.item = item;
         this.devolvido = false;
+        this.dataPrevista = dataPrevista;
 
         item.setQuantidadeExemplares(item.getQuantidadeExemplares() - 1);
     }
@@ -50,6 +52,10 @@ public class Emprestimo implements Serializable{
             System.out.println("Este item já foi devolvido.");
         }
     }
+
+    public String getDataPrevista() {return dataPrevista;}
+
+    public void setDataPrevista(String dataPrevista) {this.dataPrevista = dataPrevista;}
 
     public void exibirInfo() {
         System.out.println(

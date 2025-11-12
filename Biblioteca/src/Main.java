@@ -3,6 +3,7 @@ import pessoa.Autor;
 import pessoa.Bibliotecario;
 import pessoa.Leitor;
 import emprestimo.Emprestimo;
+import evento.Evento;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -19,10 +20,11 @@ public class Main {
             System.out.println("3 - Menu de Empréstimos");
             System.out.println("4 - Menu de Autores");
             System.out.println("5 - Menu de Categorias");
-            System.out.println("6 - [PERIGO] Resetar Todos os Dados");
+            System.out.println("6 - Menu de Eventos");
+            System.out.println("7 - [PERIGO] Resetar Todos os Dados");
             System.out.println("0 - Sair");
 
-            opcao = lerOpcao(sc, 0, 6);
+            opcao = lerOpcao(sc, 0, 7);
 
             switch (opcao) {
                 case 1 -> menuLeitores(b, sc);
@@ -30,7 +32,8 @@ public class Main {
                 case 3 -> menuEmprestimos(b, sc);
                 case 4 -> menuAutores(b, sc);
                 case 5 -> menuCategorias(b, sc);
-                case 6 -> {
+                case 6 -> menuEventos(b, sc);
+                case 7 -> {
                     System.out.print("TEM CERTEZA? Isso apagará TUDO. (s/n): ");
                     if (sc.nextLine().equalsIgnoreCase("s")) {
                         b.resetarDados();
@@ -135,12 +138,34 @@ public class Main {
             System.out.println("1 - Realizar Empréstimo");
             System.out.println("2 - Listar Empréstimos");
             System.out.println("3 - Realizar Devolução");
+            System.out.println("4 - Renovar Empréstimo (Editar Data)");
             System.out.println("0 - Voltar");
-            op = lerOpcao(sc, 0, 3);
+            op = lerOpcao(sc, 0, 4);
             switch (op) {
                 case 1 -> realizarNovoEmprestimo(b, sc);
                 case 2 -> b.listarEmprestimos();
                 case 3 -> realizarNovaDevolucao(b, sc);
+                case 4 -> renovarEmprestimo(b, sc);
+                case 0 -> System.out.println("↩ Voltando...");
+            }
+        } while (op != 0);
+    }
+
+    private static void menuEventos(Bibliotecario b, Scanner sc) {
+        int op;
+        do {
+            System.out.println("\n--- MENU DE EVENTOS ---");
+            System.out.println("1 - Cadastrar Evento");
+            System.out.println("2 - Listar Eventos");
+            System.out.println("3 - Editar Evento");
+            System.out.println("4 - Deletar Evento");
+            System.out.println("0 - Voltar");
+            op = lerOpcao(sc, 0, 4);
+            switch (op) {
+                case 1 -> cadastrarNovoEvento(b, sc);
+                case 2 -> b.listarEventos();
+                case 3 -> editarEvento(b, sc);
+                case 4 -> deletarEvento(b, sc);
                 case 0 -> System.out.println("↩ Voltando...");
             }
         } while (op != 0);
@@ -250,6 +275,31 @@ public class Main {
         }
 
         b.addItem(new Revista(titulo, qtd, editora, cat));
+    }
+
+    private static void cadastrarNovoEvento(Bibliotecario b, Scanner sc) {
+        System.out.print("Nome do Evento (ou 'c' para cancelar): ");
+        String nome = sc.nextLine();
+        if (nome.equalsIgnoreCase("c")) {
+            System.out.println("Cadastro cancelado.");
+            return;
+        }
+
+        System.out.print("Data/Horário (ex: Toda Terça às 19h) (ou 'c' para cancelar): ");
+        String data = sc.nextLine();
+        if (data.equalsIgnoreCase("c")) {
+            System.out.println("Cadastro cancelado.");
+            return;
+        }
+
+        System.out.print("Local (ex: Sala Principal) (ou 'c' para cancelar): ");
+        String local = sc.nextLine();
+        if (local.equalsIgnoreCase("c")) {
+            System.out.println("Cadastro cancelado.");
+            return;
+        }
+
+        b.cadastrarEvento(nome, data, local);
     }
 
     // --- 3. LÓGICAS DE "EDITAR" (UI) ---
@@ -371,6 +421,45 @@ public class Main {
         }
     }
 
+    private static void editarEvento(Bibliotecario b, Scanner sc) {
+        System.out.println("--- Lista de Eventos ---");
+        b.listarEventos();
+        Integer id = lerInteiroCancelavel(sc, "Digite o ID do evento a editar (ou 'c' para cancelar): ");
+        if (id == null) return;
+
+        Evento evento = b.buscarEventoPorId(id);
+        if (evento == null) {
+            System.out.println("Evento não encontrado.");
+            return;
+        }
+
+        System.out.println("--- Editando Evento ---");
+        evento.exibirInfo();
+        System.out.println("\nO que deseja editar?");
+        System.out.println("1 - Nome");
+        System.out.println("2 - Data/Horário");
+        System.out.println("3 - Local");
+        System.out.println("0 - Cancelar");
+
+        int op = lerOpcao(sc, 0, 3);
+
+        switch(op) {
+            case 0 -> { System.out.println("Edição cancelada."); return; }
+            case 1 -> {
+                System.out.print("Digite o novo nome: ");
+                b.editarEvento(evento, 1, sc.nextLine());
+            }
+            case 2 -> {
+                System.out.print("Digite a nova Data/Horário: ");
+                b.editarEvento(evento, 2, sc.nextLine());
+            }
+            case 3 -> {
+                System.out.print("Digite o novo Local: ");
+                b.editarEvento(evento, 3, sc.nextLine());
+            }
+        }
+    }
+
     // --- 4. LÓGICAS DE "DELETAR" (UI) ---
 
     private static void deletarLeitor(Bibliotecario b, Scanner sc) {
@@ -448,6 +537,26 @@ public class Main {
         System.out.print("Tem certeza que quer deletar " + item.getTitulo() + "? (s/n): ");
         if (sc.nextLine().equalsIgnoreCase("s")) {
             b.deletarItem(item);
+        } else {
+            System.out.println("Operação cancelada.");
+        }
+    }
+
+    private static void deletarEvento(Bibliotecario b, Scanner sc) {
+        System.out.println("--- Lista de Eventos ---");
+        b.listarEventos();
+        Integer id = lerInteiroCancelavel(sc, "Digite o ID do evento a deletar (ou 'c' para cancelar): ");
+        if (id == null) return;
+
+        Evento evento = b.buscarEventoPorId(id);
+        if (evento == null) {
+            System.out.println("Evento não encontrado.");
+            return;
+        }
+
+        System.out.print("Tem certeza que quer deletar o evento: " + evento.getNome() + "? (s/n): ");
+        if (sc.nextLine().equalsIgnoreCase("s")) {
+            b.deletarEvento(evento);
         } else {
             System.out.println("Operação cancelada.");
         }
@@ -540,13 +649,20 @@ public class Main {
             return;
         }
 
+        System.out.print("Digite a data prevista de devolução (ex: 20/12/2025): ");
+        String dataPrevista = sc.nextLine();
+        if (dataPrevista.equalsIgnoreCase("c")) {
+            System.out.println("Operação cancelada.");
+            return;
+        }
+
         Item item = b.buscarItemPorId(idItem);
         if (item == null || !item.isDisponivel()) {
             System.out.println("Item inválido ou indisponível.");
             return;
         }
 
-        b.realizarEmprestimo(leitor, item);
+        b.realizarEmprestimo(leitor, item, dataPrevista);
     }
 
     private static void realizarNovaDevolucao(Bibliotecario b, Scanner sc) {
@@ -580,6 +696,47 @@ public class Main {
         }
 
         b.realizarDevolucao(emp);
+    }
+
+    private static void renovarEmprestimo(Bibliotecario b, Scanner sc) {
+        Leitor leitor = autenticarLeitor(b, sc);
+        if (leitor == null) {
+            System.out.println("Autenticação falhou. Operação cancelada.");
+            return;
+        }
+
+        ArrayList<Emprestimo> ativos = b.getEmprestimosAtivos(leitor);
+        if (ativos.isEmpty()) {
+            System.out.println("O leitor " + leitor.getNome() + " não possui empréstimos ativos para renovar.");
+            return;
+        }
+
+        System.out.println("\n--- Empréstimos Ativos de " + leitor.getNome() + " ---");
+        for (Emprestimo emp : ativos) {
+            emp.exibirInfo();
+        }
+
+        Integer idEmp = lerInteiroCancelavel(sc, "Digite o ID do empréstimo a renovar (ou 'c' para cancelar): ");
+        if (idEmp == null) {
+            System.out.println("Operação cancelada.");
+            return;
+        }
+
+        Emprestimo emp = b.getEmprestimoAtivoPorId(idEmp, leitor);
+        if (emp == null) {
+            System.out.println("ID do empréstimo não encontrado ou já devolvido.");
+            return;
+        }
+
+        System.out.println("Data atual: " + emp.getDataPrevista());
+        System.out.print("Digite a NOVA data de devolução (ou 'c' para cancelar): ");
+        String novaData = sc.nextLine();
+        if (novaData.equalsIgnoreCase("c")) {
+            System.out.println("Operação cancelada.");
+            return;
+        }
+
+        b.renovarEmprestimo(emp, novaData);
     }
 
 
