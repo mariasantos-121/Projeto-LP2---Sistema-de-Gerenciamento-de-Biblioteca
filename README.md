@@ -10,7 +10,9 @@ Categorias: Cadastrar, Listar, Editar e Deletar.
 
 Itens (Livros/Revistas): Cadastrar (com opção de criar autor/categoria na hora), Listar, Editar e Deletar.
 
-Empréstimos: Realizar empréstimos (com autenticação de leitor) e devoluções.
+Empréstimos: Realizar empréstimos, Listar emprestimo, Realizar devolução, Renovar emprestimo.
+
+Eventos: Cadastrar, Listar, Editar e Deletar.
 
 Sistema: Os dados são salvos e carregados automaticamente. Há uma opção para resetar todos os dados.
 
