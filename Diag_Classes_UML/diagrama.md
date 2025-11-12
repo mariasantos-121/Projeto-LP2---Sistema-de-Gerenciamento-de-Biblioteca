@@ -1,124 +1,135 @@
 classDiagram
-    direction LR
+    class Main {
+        + main()
+    }
 
-    class Pessoa {
-        - String nome
-        + getNome()
-        + setNome()
+    class Emprestimo {
+        - leitor
+        - item
+        - devolvido
+        - dataPrevista
+        - dataEmprestimo
         + getId()
+        + getLeitor()
+        + getItem()
+        + isDevolvido()
+        + getDataEmprestimo()
+        + getDataPrevista()
+        + devolver()
+        + toString()
     }
+    Serializable <|.. Emprestimo
 
-    class Leitor {
-        - String cpf
-        + getCpf()
-        + setCpf()
-        + exibirInfo()
-    }
-
-    class Bibliotecario {
-        - ArrayList<Leitor> leitores
-        - ArrayList<Autor> autores
-        - ArrayList<Categoria> categorias
-        - ArrayList<Item> itens
-        - ArrayList<Emprestimo> emprestimos
-        + cadLeitor()
-        + listLeitores()
-        + editarLeitorNome()
-        + editarLeitorCPF()
-        + deletarLeitor()
-        + buscaID()
-        + validarCPF()
-        + cadastrarAutor()
-        + listarAutores()
-        + editarAutor()
-        + deletarAutor()
-        + buscarAutorPorId()
-        + cadastrarCategoria()
-        + listarCategorias()
-        + editarCategoria()
-        + deletarCategoria()
-        + buscarCategoriaPorId()
-        + addItem()
-        + listarItens()
-        + editarItem()
-        + deletarItem()
-        + buscarItemPorId()
-        + realizarEmprestimo()
-        + realizarDevolucao()
-        + listarEmprestimos()
-        + getEmprestimosAtivos()
-        + getEmprestimoAtivoPorId()
-        + resetarDados()
-        + salvarDados()
-        + carregarDados()
-        + exibirInfo()
-    }
-
-    class Autor {
-        - String nome
+    class Evento {
+        - nome
+        - data
+        - local
         + getId()
         + getNome()
         + setNome()
+        + getData()
+        + setData()
+        + getLocal()
+        + setLocal()
+        + toString()
     }
+    Serializable <|.. Evento
 
     class Categoria {
-        - String nome
+        - nome
         + getId()
         + getNome()
         + setNome()
+        + toString()
     }
+    Serializable <|.. Categoria
 
     class Item {
-        - String titulo
-        - int quantidadeExemplares
-        - boolean disponivel
-        - Categoria categoria
-        + getCategoria()
-        + setCategoria()
+        - titulo
+        - quantidadeExemplares
+        - disponivel
+        - categoria
         + getId()
         + getTitulo()
         + setTitulo()
         + getQuantidadeExemplares()
         + setQuantidadeExemplares()
         + isDisponivel()
+        + setDisponivel()
+        + getCategoria()
+        + setCategoria()
+        + toString()
     }
+    Serializable <|.. Item
 
     class Livro {
-        - Autor autor
+        - autor
+        - isbn
         + getAutor()
         + setAutor()
-        + exibirInfo()
+        + getIsbn()
+        + setIsbn()
+        + toString()
     }
+    Item <|-- Livro
 
     class Revista {
-        - String editora
-        + getEditora()
-        + setEditora()
-        + exibirInfo()
+        - edicao
+        - periodicidade
+        + getEdicao()
+        + setEdicao()
+        + getPeriodicidade()
+        + setPeriodicidade()
+        + toString()
     }
-
-    class Emprestimo {
-        - Leitor leitor
-        - Item item
-        - boolean devolvido
-        + getId()
-        + getLeitor()
-        + getItem()
-        + isDevolvido()
-        + devolver()
-        + exibirInfo()
-    }
-
-    Pessoa <|-- Leitor
-    Pessoa <|-- Bibliotecario
-    Item <|-- Livro
     Item <|-- Revista
-    Bibliotecario --> Leitor : gerencia
-    Bibliotecario --> Autor : cadastra
-    Bibliotecario --> Categoria : organiza
-    Bibliotecario --> Item : controla
-    Bibliotecario --> Emprestimo : realiza
-    Item --> Categoria : pertence
-    Livro --> Autor : escrito_por
-    Emprestimo --> Leitor : pertence_a
-    Emprestimo --> Item : refere_se
+
+    class Pessoa {
+        - nome
+        - cpf
+        - telefone
+        + getNome()
+        + setNome()
+        + getCpf()
+        + setCpf()
+        + getTelefone()
+        + setTelefone()
+        + toString()
+    }
+    Serializable <|.. Pessoa
+
+    class Autor {
+        - nacionalidade
+        + getNacionalidade()
+        + setNacionalidade()
+        + toString()
+    }
+    Serializable <|.. Autor
+
+    class Bibliotecario {
+        - matricula
+        + getMatricula()
+        + setMatricula()
+        + registrarEmprestimo()
+        + registrarDevolucao()
+        + toString()
+    }
+    Pessoa <|-- Bibliotecario
+
+    class Leitor {
+        - matricula
+        - emprestimos
+        + getMatricula()
+        + setMatricula()
+        + getEmprestimos()
+        + adicionarEmprestimo()
+        + toString()
+    }
+    Pessoa <|-- Leitor
+
+%% Relacionamentos adicionais
+    Leitor "1" --> "*" Emprestimo : realiza
+    Emprestimo "*" --> "1" Item : referencia
+    Item "*" --> "1" Categoria : pertence
+    Livro "1" --> "1" Autor : escrito por
+    Evento "*" --> "*" Pessoa : participantes
