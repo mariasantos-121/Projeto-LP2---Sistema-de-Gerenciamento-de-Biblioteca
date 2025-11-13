@@ -1,126 +1,120 @@
 classDiagram
-class Emprestimo {
-    - leitor
-    - item
-    - devolvido
-    - dataPrevista
-    - dataEmprestimo
-    + getId()
-    + getLeitor()
-    + getItem()
-    + isDevolvido()
-    + getDataEmprestimo()
-    + getDataPrevista()
-    + devolver()
-    + toString()
-}
-class Serializable
+    %% --- Interface de Persistência ---
+    class Serializable {
+        <<Interface>>
+    }
 
-Serializable <|.. Emprestimo
+    %% --- Hierarquia Pessoa ---
+    class Pessoa {
+        <<Abstract>>
+        -id: int
+        -nome: String
+        +getId(): int
+        +getNome(): String
+        +setNome(String): void
+        +exibirInfo()*: void
+    }
+    Serializable <|.. Pessoa
 
-class Evento {
-    - nome
-    - data
-    - local
-    + getId()
-    + getNome()
-    + setNome()
-    + getData()
-    + setData()
-    + getLocal()
-    + setLocal()
-    + toString()
-}
-Serializable <|.. Evento
+    class Leitor {
+        -cpf: String
+        +getCpf(): String
+        +setCpf(String): void
+        +exibirInfo(): void
+    }
+    Pessoa <|-- Leitor
 
-class Categoria {
-    - nome
-    + getId()
-    + getNome()
-    + setNome()
-    + toString()
-}
-Serializable <|.. Categoria
+    class Bibliotecario {
+        %% Classe de Controle, herda ID e Nome
+        %% Não possui atributos de dados próprios
+        +exibirInfo(): void
+    }
+    Pessoa <|-- Bibliotecario
 
-class Item {
-    - titulo
-    - quantidadeExemplares
-    - disponivel
-    - categoria
-    + getId()
-    + getTitulo()
-    + setTitulo()
-    + getQuantidadeExemplares()
-    + setQuantidadeExemplares()
-    + isDisponivel()
-    + setDisponivel()
-    + getCategoria()
-    + setCategoria()
-    + toString()
-}
-Serializable <|.. Item
+    class Autor {
+        -id: int
+        -nome: String
+        +getId(): int
+        +getNome(): String
+        +setNome(String): void
+    }
+    Serializable <|.. Autor
 
-class Livro {
-    - autor
-    - isbn
-    + getAutor()
-    + setAutor()
-    + getIsbn()
-    + setIsbn()
-    + toString()
-}
-Item <|-- Livro
+    %% --- Hierarquia Item ---
+    class Item {
+        <<Abstract>>
+        -id: int
+        -titulo: String
+        -quantidadeExemplares: int
+        -disponivel: boolean
+        -categoria: Categoria
+        +getId(): int
+        +getTitulo(): String
+        +setTitulo(String): void
+        +getQuantidadeExemplares(): int
+        +setQuantidadeExemplares(int): void
+        +isDisponivel(): boolean
+        +getCategoria(): Categoria
+        +setCategoria(Categoria): void
+        +exibirInfo()*: void
+    }
+    Serializable <|.. Item
 
-class Revista {
-    - edicao
-    - periodicidade
-    + getEdicao()
-    + setEdicao()
-    + getPeriodicidade()
-    + setPeriodicidade()
-    + toString()
-}
-Item <|-- Revista
+    class Livro {
+        -autor: Autor
+        +getAutor(): Autor
+        +setAutor(Autor): void
+        +exibirInfo(): void
+    }
+    Item <|-- Livro
 
-class Pessoa {
-    - nome
-    - cpf
-    - telefone
-    + getNome()
-    + setNome()
-    + getCpf()
-    + setCpf()
-    + getTelefone()
-    + setTelefone()
-    + toString()
-}
-Serializable <|.. Pessoa
+    class Revista {
+        -editora: String
+        +getEditora(): String
+        +setEditora(String): void
+        +exibirInfo(): void
+    }
+    Item <|-- Revista
 
-class Autor {
-    - nacionalidade
-    + getNacionalidade()
-    + setNacionalidade()
-    + toString()
-}
-Serializable <|.. Autor
+    class Categoria {
+        -id: int
+        -nome: String
+        +getId(): int
+        +getNome(): String
+        +setNome(String): void
+    }
+    Serializable <|.. Categoria
 
-class Bibliotecario {
-    - matricula
-    + getMatricula()
-    + setMatricula()
-    + registrarEmprestimo()
-    + registrarDevolucao()
-    + toString()
-}
-Pessoa <|-- Bibliotecario
+    %% --- Entidades Independentes ---
+    class Emprestimo {
+        -id: int
+        -leitor: Leitor
+        -item: Item
+        -devolvido: boolean
+        -dataPrevista: String
+        +getId(): int
+        +getLeitor(): Leitor
+        +getItem(): Item
+        +isDevolvido(): boolean
+        +getDataPrevista(): String
+        +setDataPrevista(String): void
+        +devolver(): void
+        +exibirInfo(): void
+    }
+    Serializable <|.. Emprestimo
 
-class Leitor {
-    - matricula
-    - emprestimos
-    + getMatricula()
-    + setMatricula()
-    + getEmprestimos()
-    + adicionarEmprestimo()
-    + toString()
-}
-Pessoa <|-- Leitor
+    class Evento {
+        -id: int
+        -nome: String
+        -data: String
+        -local: String
+        +getId(): int
+        +getNome(): String
+        +setNome(String): void
+        +getData(): String
+        +setData(String): void
+        +getLocal(): String
+        +setLocal(String): void
+        +exibirInfo(): void
+    }
+    Serializable <|.. Evento
