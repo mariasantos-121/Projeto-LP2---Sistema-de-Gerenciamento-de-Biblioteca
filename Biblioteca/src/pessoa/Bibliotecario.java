@@ -1,23 +1,24 @@
 package pessoa;
 
 import emprestimo.Emprestimo;
-import item.Item;
-import item.Categoria;
-import item.Livro;
-import item.Revista;
 import evento.Evento;
+import item.*;
+import util.Configuracao;
 import java.util.ArrayList;
 import java.io.*;
 
 public class Bibliotecario extends Pessoa {
 
     private static int contadorBibliotecario = 1;
+    private Configuracao config;
     private ArrayList<Leitor> leitores;
     private ArrayList<Autor> autores;
     private ArrayList<Categoria> categorias;
     private ArrayList<Item> itens;
     private ArrayList<Emprestimo> emprestimos;
     private ArrayList<Evento> eventos;
+    private ArrayList<Editora> editoras;
+    private ArrayList<Prateleira> prateleiras;
 
     public Bibliotecario(String nome) {
         super(nome, contadorBibliotecario++);
@@ -27,9 +28,12 @@ public class Bibliotecario extends Pessoa {
         this.autores = new ArrayList<>();
         this.categorias = new ArrayList<>();
         this.eventos = new ArrayList<>();
+        this.editoras = new ArrayList<>();
+        this.prateleiras = new ArrayList<>();
+        this.config = new Configuracao();
     }
 
-    // --- 1. MÉTODOS DE LEITOR ---
+    // --- MÉTODOS DE LEITOR ---
 
     public boolean cadLeitor(String nome, String cpf) {
         if (!validarCPF(cpf)) {
@@ -85,15 +89,6 @@ public class Bibliotecario extends Pessoa {
         System.out.println("Leitor deletado com sucesso.");
     }
 
-    public Leitor buscaID(int id) {
-        for (Leitor leitor : leitores) {
-            if (leitor.getId() == id) {
-                return leitor;
-            }
-        }
-        return null;
-    }
-
     public boolean validarCPF(String cpf) {
         cpf = cpf.replaceAll("\\D", "");
 
@@ -120,7 +115,8 @@ public class Bibliotecario extends Pessoa {
     }
 
 
-    // --- 2. MÉTODOS DE AUTOR ---
+    // --- MÉTODOS DE AUTOR ---
+
     public void cadastrarAutor(String nome) {
         Autor novoAutor = new Autor(nome);
         autores.add(novoAutor);
@@ -128,15 +124,6 @@ public class Bibliotecario extends Pessoa {
         salvarDados();
     }
 
-    public void listarAutores() {
-        if (autores.isEmpty()) {
-            System.out.println("Nenhum autor cadastrado.");
-            return;
-        }
-        for (Autor a : autores) {
-            System.out.println("ID: " + a.getId() + " | Nome: " + a.getNome());
-        }
-    }
 
     public void editarAutor(Autor autor, String novoNome) {
         autor.setNome(novoNome);
@@ -158,16 +145,8 @@ public class Bibliotecario extends Pessoa {
         System.out.println("Autor deletado com sucesso.");
     }
 
-    public Autor buscarAutorPorId(int id) {
-        for (Autor a : autores) {
-            if (a.getId() == id) {
-                return a;
-            }
-        }
-        return null;
-    }
 
-    // --- 3. MÉTODOS DE CATEGORIA ---
+    // --- MÉTODOS DE CATEGORIA ---
     public void cadastrarCategoria(String nome) {
         Categoria novaCat = new Categoria(nome);
         categorias.add(novaCat);
@@ -175,15 +154,6 @@ public class Bibliotecario extends Pessoa {
         salvarDados();
     }
 
-    public void listarCategorias() {
-        if (categorias.isEmpty()) {
-            System.out.println("Nenhuma categoria cadastrada.");
-            return;
-        }
-        for (Categoria c : categorias) {
-            System.out.println("ID: " + c.getId() + " | Nome: " + c.getNome());
-        }
-    }
 
     public void editarCategoria(Categoria cat, String novoNome) {
         cat.setNome(novoNome);
@@ -203,29 +173,11 @@ public class Bibliotecario extends Pessoa {
         System.out.println("Categoria deletada com sucesso.");
     }
 
-    public Categoria buscarCategoriaPorId(int id) {
-        for (Categoria c : categorias) {
-            if (c.getId() == id) {
-                return c;
-            }
-        }
-        return null;
-    }
 
     public void addItem(Item item) {
         itens.add(item);
         System.out.println("Item adicionado com sucesso! ID: " + item.getId());
         salvarDados();
-    }
-
-    public void listarItens() {
-        if (itens.isEmpty()) {
-            System.out.println("Nenhum item cadastrado.");
-            return;
-        }
-        for (Item i : itens) {
-            i.exibirInfo();
-        }
     }
 
     public void editarItem(Item item, int opcao, String valor, Object obj) {
@@ -234,10 +186,17 @@ public class Bibliotecario extends Pessoa {
             case 2 -> item.setQuantidadeExemplares(Integer.parseInt(valor));
             case 3 -> item.setCategoria((Categoria) obj);
             case 4 -> {
+                // Opção 4: Autor (para Livro) ou Editora (para Revista)
                 if (item instanceof Livro livro) {
                     livro.setAutor((Autor) obj);
                 } else if (item instanceof Revista revista) {
-                    revista.setEditora(valor);
+                    revista.setEditora((Editora) obj); // <--- MUDANÇA AQUI
+                }
+            }
+            case 5 -> item.setPrateleira((Prateleira) obj);
+            case 6 -> {
+                if (item instanceof Livro livro) {
+                    livro.setEditora((Editora) obj);
                 }
             }
         }
@@ -257,16 +216,7 @@ public class Bibliotecario extends Pessoa {
         System.out.println("Item deletado com sucesso.");
     }
 
-    public Item buscarItemPorId(int id) {
-        for (Item item : itens) {
-            if (item.getId() == id) {
-                return item;
-            }
-        }
-        return null;
-    }
-
-    // --- 5. MÉTODOS DE LÓGICA DE NEGÓCIO (Empréstimo/Devolução) ---
+    // --- MÉTODOS DE LÓGICA DE NEGÓCIO (Empréstimo/Devolução) ---
 
     public void realizarEmprestimo(Leitor leitor, Item item, String dataPrevista) {
         Emprestimo emp = new Emprestimo(leitor, item, dataPrevista);
@@ -289,16 +239,6 @@ public class Bibliotecario extends Pessoa {
         salvarDados();
     }
 
-    public void listarEmprestimos() {
-        if (emprestimos.isEmpty()) {
-            System.out.println("Nenhum empréstimo registrado.");
-            return;
-        }
-        for (Emprestimo emp : emprestimos) {
-            emp.exibirInfo();
-        }
-    }
-
     public ArrayList<Emprestimo> getEmprestimosAtivos(Leitor leitor) {
         ArrayList<Emprestimo> ativos = new ArrayList<>();
         for (Emprestimo emp : emprestimos) {
@@ -318,7 +258,7 @@ public class Bibliotecario extends Pessoa {
         return null;
     }
 
-    // --- 6. MÉTODOS DE EVENTO---
+    // --- MÉTODOS DE EVENTO---
 
     public void cadastrarEvento(String nome, String data, String local) {
         Evento novoEvento = new Evento(nome, data, local);
@@ -327,24 +267,6 @@ public class Bibliotecario extends Pessoa {
         salvarDados();
     }
 
-    public void listarEventos() {
-        if (eventos.isEmpty()) {
-            System.out.println("Nenhum evento cadastrado.");
-            return;
-        }
-        for (Evento e : eventos) {
-            e.exibirInfo();
-        }
-    }
-
-    public Evento buscarEventoPorId(int id) {
-        for (Evento e : eventos) {
-            if (e.getId() == id) {
-                return e;
-            }
-        }
-        return null;
-    }
 
     public void editarEvento(Evento evento, int opcao, String novoValor) {
         switch (opcao) {
@@ -358,13 +280,64 @@ public class Bibliotecario extends Pessoa {
     }
 
     public void deletarEvento(Evento evento) {
-        // Este CRUD é simples, não precisa de verificação de dependência
         eventos.remove(evento);
         System.out.println("Evento deletado com sucesso.");
         salvarDados();
     }
 
-    // --- 7. MÉTODOS DE PERSISTÊNCIA E SISTEMA ---
+    // --- MÉTODOS DE EDITORA ---
+    public void cadastrarEditora(String nome) {
+        Editora nova = new Editora(nome);
+        editoras.add(nova);
+        System.out.println("Editora cadastrada! ID: " + nova.getId());
+        salvarDados();
+    }
+
+    public void editarEditora(Editora e, String novoNome) {
+        e.setNome(novoNome);
+        System.out.println("Editora atualizada!");
+        salvarDados();
+    }
+
+    public void deletarEditora(Editora e) {
+        editoras.remove(e); // Futuramente verificar dependencia com Revista
+        System.out.println("Editora removida.");
+        salvarDados();
+    }
+
+
+    // --- MÉTODOS DE PRATELEIRA ---
+    public void cadastrarPrateleira(String local) {
+        Prateleira nova = new Prateleira(local);
+        prateleiras.add(nova);
+        System.out.println("Prateleira cadastrada! ID: " + nova.getId());
+        salvarDados();
+    }
+    public void editarPrateleira(Prateleira p, String novoLocal) {
+        p.setLocalizacao(novoLocal);
+        System.out.println("Prateleira atualizada!");
+        salvarDados();
+    }
+
+    public void deletarPrateleira(Prateleira p) {
+        prateleiras.remove(p);
+        System.out.println("Prateleira removida.");
+        salvarDados();
+    }
+
+    // ---------------------- LISTAR GENERICO ------------------------
+    public void listarRegistros(ArrayList<? extends util.Exibivel> lista) {
+        if (lista.isEmpty()) {
+            System.out.println("Nenhum registro encontrado.");
+            return;
+        }
+        for (util.Exibivel item : lista) {
+            item.exibirInfo();
+            System.out.println("-------------------------------------------------");
+        }
+    }
+
+    // --- MÉTODOS DE PERSISTÊNCIA E SISTEMA ---
     public void resetarDados() {
         this.leitores.clear();
         this.itens.clear();
@@ -372,6 +345,8 @@ public class Bibliotecario extends Pessoa {
         this.autores.clear();
         this.categorias.clear();
         this.eventos.clear();
+        this.editoras.clear();
+        this.prateleiras.clear();
 
         Item.setContadorID(0);
         Leitor.setContadorLeitor(0);
@@ -379,6 +354,8 @@ public class Bibliotecario extends Pessoa {
         Autor.setContadorID(0);
         Categoria.setContadorID(0);
         Evento.setContadorID(0);
+        Editora.setContadorID(0);
+        Prateleira.setContadorID(0);
 
         salvarDados();
         System.out.println(">>> DADOS DA BIBLIOTECA RESETADOS COM SUCESSO! <<<");
@@ -386,18 +363,24 @@ public class Bibliotecario extends Pessoa {
 
     public void salvarDados() {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("biblioteca.dat"))) {
+            // 1. Salva Contadores
             oos.writeInt(Item.getContadorID());
             oos.writeInt(Leitor.getContadorLeitor());
             oos.writeInt(Emprestimo.getContadorID());
             oos.writeInt(Autor.getContadorID());
             oos.writeInt(Categoria.getContadorID());
             oos.writeInt(Evento.getContadorID());
+            oos.writeInt(Editora.getContadorID());
+            oos.writeInt(Prateleira.getContadorID());
+            // 2. Salva Listas
             oos.writeObject(leitores);
             oos.writeObject(itens);
             oos.writeObject(emprestimos);
             oos.writeObject(autores);
             oos.writeObject(categorias);
             oos.writeObject(eventos);
+            oos.writeObject(editoras);
+            oos.writeObject(prateleiras);
 
         } catch (IOException e) {
             System.out.println("Erro ao salvar dados: " + e.getMessage());
@@ -406,6 +389,7 @@ public class Bibliotecario extends Pessoa {
 
     @SuppressWarnings("unchecked")
     public void carregarDados() {
+        carregarConfig();
         File arquivo = new File("biblioteca.dat");
         if (!arquivo.exists()) {
             System.out.println("Arquivo de dados não encontrado. Começando com novos dados.");
@@ -413,18 +397,26 @@ public class Bibliotecario extends Pessoa {
             return;
         }
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(arquivo))) {
+            // 1. Carrega Contadores
             Item.setContadorID(ois.readInt());
             Leitor.setContadorLeitor(ois.readInt());
             Emprestimo.setContadorID(ois.readInt());
             Autor.setContadorID(ois.readInt());
             Categoria.setContadorID(ois.readInt());
             Evento.setContadorID(ois.readInt());
+            Editora.setContadorID(ois.readInt());
+            Prateleira.setContadorID(ois.readInt());
+
+            // 2. Carrega Listas
             this.leitores = (ArrayList<Leitor>) ois.readObject();
             this.itens = (ArrayList<Item>) ois.readObject();
             this.emprestimos = (ArrayList<Emprestimo>) ois.readObject();
             this.autores = (ArrayList<Autor>) ois.readObject();
             this.categorias = (ArrayList<Categoria>) ois.readObject();
             this.eventos = (ArrayList<Evento>) ois.readObject();
+            this.editoras = (ArrayList<Editora>) ois.readObject();
+            this.prateleiras = (ArrayList<Prateleira>) ois.readObject();
+
             System.out.println("Dados carregados com sucesso de biblioteca.dat");
         } catch (Exception e) {
             System.out.println("Erro ao carregar dados: " + e.getMessage());
@@ -434,10 +426,65 @@ public class Bibliotecario extends Pessoa {
             this.autores = new ArrayList<>();
             this.categorias = new ArrayList<>();
             this.eventos = new ArrayList<>();
+            this.editoras = new ArrayList<>();
+            this.prateleiras = new ArrayList<>();
         }
     }
 
-    // --- 8. MÉTODOS SOBRESCRITOS
+    // --- GETTERS (Para a Main usar) ---
+    public ArrayList<Leitor> getLeitores() { return leitores; }
+    public ArrayList<Autor> getAutores() { return autores; }
+    public ArrayList<Categoria> getCategorias() { return categorias; }
+    public ArrayList<Item> getItens() { return itens; }
+    public ArrayList<Emprestimo> getEmprestimos() { return emprestimos; }
+    public ArrayList<Evento> getEventos() { return eventos; }
+    public ArrayList<Editora> getEditoras() { return editoras; }
+    public ArrayList<Prateleira> getPrateleiras() { return prateleiras; }
+
+    // --- METODO GENERICO DE BUSCA ---
+    public <T extends util.Identificavel> T buscarPorId(ArrayList<T> lista, int id) {
+        for (T objeto : lista) {
+            if (objeto.getId() == id) {
+                return objeto;
+            }
+        }
+        return null;
+    }
+
+    // =============================================================
+    //       GERENCIAMENTO DE CONFIGURAÇÃO (PREFERÊNCIAS)
+    // =============================================================
+
+    public Configuracao getConfig() {
+        return config;
+    }
+
+    public void atualizarConfig(String novoNome, String novoTema) {
+        config.setNomeExibicao(novoNome);
+        config.setTema(novoTema);
+        salvarConfig(); // Salva imediatamente em arquivo separado
+    }
+
+    public void salvarConfig() {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("config.dat"))) {
+            oos.writeObject(config);
+        } catch (IOException e) {
+            System.out.println("Erro ao salvar configurações: " + e.getMessage());
+        }
+    }
+
+    public void carregarConfig() {
+        File arquivo = new File("config.dat");
+        if (!arquivo.exists()) return; // Se não existe, usa o padrão (criado no construtor)
+
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(arquivo))) {
+            this.config = (Configuracao) ois.readObject();
+        } catch (Exception e) {
+            System.out.println("Erro ao carregar configurações.");
+        }
+    }
+
+    // --- MÉTODOS SOBRESCRITOS ---
     @Override
     public void exibirInfo() {
         System.out.println("--- Informacoes Bibliotecario ---");

@@ -1,23 +1,27 @@
 package evento;
 
 import java.io.Serializable;
+import util.Identificavel;
+import util.Exibivel;
 
-public class Evento implements Serializable {
+public class Evento implements Serializable, Identificavel, Exibivel {
     private static int contadorID = 0;
     private final int id;
     private String nome;
-    private String data; // Usar String é o mais simples para "Toda Terça às 19h"
+    private String data;
     private String local;
 
     public Evento(String nome, String data, String local) {
-        this.id = ++contadorID; // Começa em 1
+        this.id = ++contadorID;
         this.nome = nome;
         this.data = data;
         this.local = local;
     }
 
+    @Override
     public int getId() {return id;}
 
+    @Override
     public String getNome() {return nome;}
 
     public void setNome(String nome) {this.nome = nome;}
@@ -34,8 +38,10 @@ public class Evento implements Serializable {
 
     public static void setContadorID(int c) {contadorID = c;}
 
+    @Override
     public void exibirInfo() {
-        System.out.println("ID: " + id + " | Evento: " + nome +
-                " | Data: " + data + " | Local: " + local);
+        System.out.println("ID: " + getId() + " | Evento: " + getNome() +
+                " | Data: " + getData() + " | Local: " + getLocal());
     }
+
 }

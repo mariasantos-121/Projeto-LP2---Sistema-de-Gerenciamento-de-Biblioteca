@@ -11,9 +11,18 @@ public class Main {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         Bibliotecario b = new Bibliotecario("Admin");
+
         b.carregarDados();
+
         int opcao;
         do {
+            // --- EXIBIR PREFERÊNCIAS AO INICIAR (Requisito 3) ---
+            util.Configuracao config = b.getConfig();
+            System.out.println("\n========================================");
+            System.out.println(" Bem-vindo, " + config.getNomeExibicao() + "!");
+            System.out.println(" Tema Atual: " + config.getTema());
+            System.out.println("========================================");
+            // -----------------------------------------------------
             System.out.println("\n===== MENU PRINCIPAL =====");
             System.out.println("1 - Menu de Leitores");
             System.out.println("2 - Menu de Itens");
@@ -21,10 +30,12 @@ public class Main {
             System.out.println("4 - Menu de Autores");
             System.out.println("5 - Menu de Categorias");
             System.out.println("6 - Menu de Eventos");
-            System.out.println("7 - [PERIGO] Resetar Todos os Dados");
+            System.out.println("7 - Menu de Editoras");
+            System.out.println("9 - Configurações (Perfil/Tema)");
+            System.out.println("10 - [PERIGO] Resetar Todos os Dados");
             System.out.println("0 - Sair");
 
-            opcao = lerOpcao(sc, 0, 7);
+            opcao = lerOpcao(sc, 0, 10);
 
             switch (opcao) {
                 case 1 -> menuLeitores(b, sc);
@@ -33,7 +44,10 @@ public class Main {
                 case 4 -> menuAutores(b, sc);
                 case 5 -> menuCategorias(b, sc);
                 case 6 -> menuEventos(b, sc);
-                case 7 -> {
+                case 7 -> menuEditoras(b, sc);
+                case 8 -> menuPrateleiras(b, sc);
+                case 9 -> menuConfiguracao(b, sc);
+                case 10 -> {
                     System.out.print("TEM CERTEZA? Isso apagará TUDO. (s/n): ");
                     if (sc.nextLine().equalsIgnoreCase("s")) {
                         b.resetarDados();
@@ -47,7 +61,25 @@ public class Main {
         sc.close();
     }
 
-    // --- 1. MENUS DE ENTIDADES ---
+    private static void menuConfiguracao(Bibliotecario b, Scanner sc) {
+        System.out.println("\n--- CONFIGURAÇÕES ---");
+        System.out.println("Nome atual: " + b.getConfig().getNomeExibicao());
+        System.out.print("Digite o novo Nome de Exibição (ou Enter para manter): ");
+        String nome = sc.nextLine();
+        if (nome.isEmpty()) nome = b.getConfig().getNomeExibicao(); // Mantém o antigo se vazio
+
+        System.out.println("Tema atual: " + b.getConfig().getTema());
+        System.out.println("Escolha o novo Tema:");
+        System.out.println("1 - Claro");
+        System.out.println("2 - Escuro");
+        int op = lerOpcao(sc, 1, 2);
+        String tema = (op == 1) ? "CLARO" : "ESCURO";
+
+        b.atualizarConfig(nome, tema);
+        System.out.println("Configurações salvas com sucesso!");
+    }
+
+    // --- MENUS DE ENTIDADES ---
 
     private static void menuLeitores(Bibliotecario b, Scanner sc) {
         int op;
@@ -61,7 +93,10 @@ public class Main {
             op = lerOpcao(sc, 0, 4);
             switch (op) {
                 case 1 -> cadastrarNovoLeitor(b, sc);
-                case 2 -> b.listLeitores();
+                case 2 -> {
+                  System.out.println("--- LISTA DE LEITORES ---");
+                    b.listarRegistros(b.getLeitores());
+                }
                 case 3 -> editarLeitor(b, sc);
                 case 4 -> deletarLeitor(b, sc);
                 case 0 -> System.out.println("↩ Voltando...");
@@ -83,7 +118,10 @@ public class Main {
             switch (op) {
                 case 1 -> cadastrarNovoLivro(b, sc);
                 case 2 -> cadastrarNovaRevista(b, sc);
-                case 3 -> b.listarItens();
+                case 3 -> {
+                    System.out.println("--- LISTA DE ITENS ---");
+                    b.listarRegistros(b.getItens());
+                }
                 case 4 -> editarItem(b, sc);
                 case 5 -> deletarItem(b, sc);
                 case 0 -> System.out.println("↩ Voltando...");
@@ -103,7 +141,10 @@ public class Main {
             op = lerOpcao(sc, 0, 4);
             switch (op) {
                 case 1 -> cadastrarNovoAutor(b, sc);
-                case 2 -> b.listarAutores();
+                case 2 -> {
+                    System.out.println("--- LISTA DE AUTORES ---");
+                    b.listarRegistros(b.getAutores());
+                }
                 case 3 -> editarAutor(b, sc);
                 case 4 -> deletarAutor(b, sc);
                 case 0 -> System.out.println("↩ Voltando...");
@@ -123,7 +164,10 @@ public class Main {
             op = lerOpcao(sc, 0, 4);
             switch (op) {
                 case 1 -> cadastrarNovaCategoria(b, sc);
-                case 2 -> b.listarCategorias();
+                case 2 -> {
+                    System.out.println("--- LISTA DE CATEGORIAS ---");
+                    b.listarRegistros(b.getCategorias());
+                }
                 case 3 -> editarCategoria(b, sc);
                 case 4 -> deletarCategoria(b, sc);
                 case 0 -> System.out.println("↩ Voltando...");
@@ -143,7 +187,10 @@ public class Main {
             op = lerOpcao(sc, 0, 4);
             switch (op) {
                 case 1 -> realizarNovoEmprestimo(b, sc);
-                case 2 -> b.listarEmprestimos();
+                case 2 -> {
+                    System.out.println("--- LISTA DE EMPRESTIMOS ---");
+                    b.listarRegistros(b.getEmprestimos());
+                }
                 case 3 -> realizarNovaDevolucao(b, sc);
                 case 4 -> renovarEmprestimo(b, sc);
                 case 0 -> System.out.println("↩ Voltando...");
@@ -163,7 +210,10 @@ public class Main {
             op = lerOpcao(sc, 0, 4);
             switch (op) {
                 case 1 -> cadastrarNovoEvento(b, sc);
-                case 2 -> b.listarEventos();
+                case 2 -> {
+                    System.out.println("--- LISTA DE EVENTOS ---");
+                    b.listarRegistros(b.getEventos());
+                }
                 case 3 -> editarEvento(b, sc);
                 case 4 -> deletarEvento(b, sc);
                 case 0 -> System.out.println("↩ Voltando...");
@@ -171,7 +221,89 @@ public class Main {
         } while (op != 0);
     }
 
-    // --- 2. LÓGICAS DE "CADASTRAR" (UI) ---
+    private static void menuEditoras(Bibliotecario b, Scanner sc) {
+        int op;
+        do {
+            System.out.println("\n--- MENU DE EDITORAS ---");
+            System.out.println("1 - Cadastrar Editora");
+            System.out.println("2 - Listar Editoras");
+            System.out.println("3 - Editar Editoras");
+            System.out.println("4 - Deletar Editora");
+            System.out.println("0 - Voltar");
+
+            op = lerOpcao(sc, 0, 4);
+            switch (op) {
+                case 1 -> {
+                    System.out.print("Nome: ");
+                    b.cadastrarEditora(sc.nextLine());
+                }
+                case 2 -> b.listarRegistros(b.getEditoras());
+                case 3 -> {
+                    b.listarRegistros(b.getEditoras());
+                    Integer id = lerInteiroCancelavel(sc, "ID para editar: ");
+                    if(id!=null) {
+                        Editora e = b.buscarPorId(b.getEditoras(), id);
+                        if(e!=null) {
+                            System.out.print("Novo nome: ");
+                            b.editarEditora(e, sc.nextLine());
+                        }
+                    }
+                }
+                case 4 -> {
+                    // Lógica similar de deletar...
+                    b.listarRegistros(b.getEditoras());
+                    Integer id = lerInteiroCancelavel(sc, "ID para deletar: ");
+                    if(id!=null) {
+                        Editora e = b.buscarPorId(b.getEditoras(), id);
+                        if(e!=null) b.deletarEditora(e);
+                    }
+                }
+            }
+        } while (op != 0);
+    }
+
+    private static void menuPrateleiras(Bibliotecario b, Scanner sc) {
+        int op;
+        do {
+            System.out.println("\n--- MENU DE PRATELEIRAS ---");
+            System.out.println("1 - Cadastrar Prateleira");
+            System.out.println("2 - Listar Prateleiras");
+            System.out.println("3 - Editar Prateleiras");
+            System.out.println("4 - Deletar Pratileiras");
+            System.out.println("0 - Voltar");
+
+            op = lerOpcao(sc, 0, 4);
+            switch (op) {
+                case 1 -> {
+                    System.out.print("Nome: ");
+                    b.cadastrarPrateleira(sc.nextLine());
+                }
+                case 2 -> b.listarRegistros(b.getPrateleiras());
+                case 3 -> {
+                    b.listarRegistros(b.getPrateleiras());
+                    Integer id = lerInteiroCancelavel(sc, "ID para editar: ");
+                    if(id!=null) {
+                        Prateleira p = b.buscarPorId(b.getPrateleiras(), id);
+                        if(p!=null) {
+                            System.out.print("Novo nome: ");
+                            b.editarPrateleira(p, sc.nextLine());
+                        }
+                    }
+                }
+                case 4 -> {
+                    // Lógica similar de deletar...
+                    b.listarRegistros(b.getPrateleiras());
+                    Integer id = lerInteiroCancelavel(sc, "ID para deletar: ");
+                    if(id!=null) {
+                        Prateleira p = b.buscarPorId(b.getPrateleiras(), id);
+                        if(p!=null) b.deletarPrateleira(p);
+                    }
+                }
+            }
+        } while (op != 0);
+    }
+
+    // --- LÓGICAS DE CADASTRAR ---
 
     private static void cadastrarNovoLeitor(Bibliotecario b, Scanner sc) {
         System.out.print("Digite o nome do Leitor (ou 'c' para cancelar): ");
@@ -226,6 +358,7 @@ public class Main {
             return;
         }
 
+
         Categoria cat = selecionarOuCriarCategoria(b, sc);
         if (cat == null) {
             System.out.println("Cadastro cancelado.");
@@ -238,14 +371,19 @@ public class Main {
             return;
         }
 
+        Editora editora = selecionarOuCriarEditora(b, sc);
+        if (editora == null) return;
+
+        Prateleira prat = selecionarOuCriarPrateleira(b, sc);
+        if (prat == null) return;
+
         Integer qtd = lerInteiroCancelavel(sc, "Quantidade (ou 'c' para cancelar): ");
         if (qtd == null) {
             System.out.println("Cadastro cancelado.");
             return;
         }
 
-        b.addItem(new Livro(titulo, autor, qtd, cat));
-    }
+        b.addItem(new Livro(titulo, autor, qtd, cat, prat, editora));    }
 
     private static void cadastrarNovaRevista(Bibliotecario b, Scanner sc) {
         System.out.print("Título (ou 'c' para cancelar): ");
@@ -261,12 +399,11 @@ public class Main {
             return;
         }
 
-        System.out.print("Editora (ou 'c' para cancelar): ");
-        String editora = sc.nextLine();
-        if (editora.equalsIgnoreCase("c")) {
-            System.out.println("Cadastro cancelado.");
-            return;
-        }
+        Editora editora = selecionarOuCriarEditora(b, sc);
+        if (editora == null) return;
+
+        Prateleira prat = selecionarOuCriarPrateleira(b, sc);
+        if (prat == null) return;
 
         Integer qtd = lerInteiroCancelavel(sc, "Quantidade (ou 'c' para cancelar): ");
         if (qtd == null) {
@@ -274,7 +411,7 @@ public class Main {
             return;
         }
 
-        b.addItem(new Revista(titulo, qtd, editora, cat));
+        b.addItem(new Revista(titulo, qtd, editora, cat, prat));
     }
 
     private static void cadastrarNovoEvento(Bibliotecario b, Scanner sc) {
@@ -302,15 +439,15 @@ public class Main {
         b.cadastrarEvento(nome, data, local);
     }
 
-    // --- 3. LÓGICAS DE "EDITAR" (UI) ---
+    // --- LÓGICAS DE EDITAR ---
 
     private static void editarLeitor(Bibliotecario b, Scanner sc) {
-        System.out.println("--- Lista de Leitores ---");
-        b.listLeitores();
+        System.out.println("--- LISTA DE LEITORES ---");
+        b.listarRegistros(b.getLeitores());
         Integer id = lerInteiroCancelavel(sc, "Digite o ID do leitor a editar (ou 'c' para cancelar): ");
         if (id == null) return;
 
-        Leitor leitor = b.buscaID(id);
+        Leitor leitor = b.buscarPorId(b.getLeitores(), id);
         if (leitor == null) {
             System.out.println("Leitor não encontrado.");
             return;
@@ -338,12 +475,12 @@ public class Main {
     }
 
     private static void editarAutor(Bibliotecario b, Scanner sc) {
-        System.out.println("--- Lista de Autores ---");
-        b.listarAutores();
+        System.out.println("--- LISTA DE AUTORES ---");
+        b.listarRegistros(b.getAutores());
         Integer id = lerInteiroCancelavel(sc, "Digite o ID do autor a editar (ou 'c' para cancelar): ");
         if (id == null) return;
 
-        Autor autor = b.buscarAutorPorId(id);
+        Autor autor = b.buscarPorId(b.getAutores(), id);
         if (autor == null) {
             System.out.println("Autor não encontrado.");
             return;
@@ -355,12 +492,12 @@ public class Main {
     }
 
     private static void editarCategoria(Bibliotecario b, Scanner sc) {
-        System.out.println("--- Lista de Categorias ---");
-        b.listarCategorias();
+        System.out.println("--- LISTA DE CATEGORIAS ---");
+        b.listarRegistros(b.getCategorias());
         Integer id = lerInteiroCancelavel(sc, "Digite o ID da categoria a editar (ou 'c' para cancelar): ");
         if (id == null) return;
 
-        Categoria cat = b.buscarCategoriaPorId(id);
+        Categoria cat = b.buscarPorId(b.getCategorias(), id);
         if (cat == null) {
             System.out.println("Categoria não encontrada.");
             return;
@@ -372,12 +509,12 @@ public class Main {
     }
 
     private static void editarItem(Bibliotecario b, Scanner sc) {
-        System.out.println("--- Lista de Itens ---");
-        b.listarItens();
+        System.out.println("--- LISTA DE ITENS ---");
+        b.listarRegistros(b.getItens());
         Integer id = lerInteiroCancelavel(sc, "Digite o ID do item a editar (ou 'c' para cancelar): ");
         if (id == null) return;
 
-        Item item = b.buscarItemPorId(id);
+        Item item = b.buscarPorId(b.getItens(), id);
         if (item == null) {
             System.out.println("Item não encontrado.");
             return;
@@ -389,11 +526,12 @@ public class Main {
         System.out.println("1 - Título");
         System.out.println("2 - Quantidade de Exemplares");
         System.out.println("3 - Categoria");
-        if (item instanceof Livro) System.out.println("4 - Autor");
+        if (item instanceof Livro) System.out.println("4 - Autor/Editora");
+        System.out.println("5 - Prateleira");
         if (item instanceof Revista) System.out.println("4 - Editora");
         System.out.println("0 - Cancelar");
 
-        int op = lerOpcao(sc, 0, 4);
+        int op = lerOpcao(sc, 0, 5);
 
         switch(op) {
             case 0 -> { System.out.println("Edição cancelada."); return; }
@@ -411,23 +549,28 @@ public class Main {
             }
             case 4 -> {
                 if (item instanceof Livro) {
-                    Autor autor = selecionarOuCriarAutor(b, sc);
-                    if (autor != null) b.editarItem(item, 4, null, autor);
+                    Autor a = selecionarOuCriarAutor(b, sc);
+                    if (a != null) b.editarItem(item, 4, null, a);
                 } else if (item instanceof Revista) {
-                    System.out.print("Digite a nova editora: ");
-                    b.editarItem(item, 4, sc.nextLine(), null);
+                    Editora e = selecionarOuCriarEditora(b, sc);
+                    if (e != null) b.editarItem(item, 4, null, e); // Agora passa Objeto
                 }
             }
+            case 5 -> {
+                Prateleira p = selecionarOuCriarPrateleira(b, sc);
+                if (p != null) b.editarItem(item, 5, null, p);
+            }
         }
+
     }
 
     private static void editarEvento(Bibliotecario b, Scanner sc) {
-        System.out.println("--- Lista de Eventos ---");
-        b.listarEventos();
+        System.out.println("--- LISTA DE EVENTOS ---");
+        b.listarRegistros(b.getEventos());
         Integer id = lerInteiroCancelavel(sc, "Digite o ID do evento a editar (ou 'c' para cancelar): ");
         if (id == null) return;
 
-        Evento evento = b.buscarEventoPorId(id);
+        Evento evento = b.buscarPorId(b.getEventos(), id);
         if (evento == null) {
             System.out.println("Evento não encontrado.");
             return;
@@ -460,15 +603,15 @@ public class Main {
         }
     }
 
-    // --- 4. LÓGICAS DE "DELETAR" (UI) ---
+    // --- LÓGICAS DE "DELETAR" ---
 
     private static void deletarLeitor(Bibliotecario b, Scanner sc) {
-        System.out.println("--- Lista de Leitores ---");
-        b.listLeitores();
+        System.out.println("--- LISTAR LEITORES ---");
+        b.listarRegistros(b.getLeitores());
         Integer id = lerInteiroCancelavel(sc, "Digite o ID do leitor a deletar (ou 'c' para cancelar): ");
         if (id == null) return;
 
-        Leitor leitor = b.buscaID(id);
+        Leitor leitor = b.buscarPorId(b.getLeitores(), id);
         if (leitor == null) {
             System.out.println("Leitor não encontrado.");
             return;
@@ -483,12 +626,12 @@ public class Main {
     }
 
     private static void deletarAutor(Bibliotecario b, Scanner sc) {
-        System.out.println("--- Lista de Autores ---");
-        b.listarAutores();
+        System.out.println("--- LISTA DE AUTORES ---");
+        b.listarRegistros(b.getAutores());
         Integer id = lerInteiroCancelavel(sc, "Digite o ID do autor a deletar (ou 'c' para cancelar): ");
         if (id == null) return;
 
-        Autor autor = b.buscarAutorPorId(id);
+        Autor autor = b.buscarPorId(b.getAutores(), id);
         if (autor == null) {
             System.out.println("Autor não encontrado.");
             return;
@@ -503,12 +646,12 @@ public class Main {
     }
 
     private static void deletarCategoria(Bibliotecario b, Scanner sc) {
-        System.out.println("--- Lista de Categorias ---");
-        b.listarCategorias();
+        System.out.println("--- LISTA DE CATEGORIAS ---");
+        b.listarRegistros(b.getCategorias());
         Integer id = lerInteiroCancelavel(sc, "Digite o ID da categoria a deletar (ou 'c' para cancelar): ");
         if (id == null) return;
 
-        Categoria cat = b.buscarCategoriaPorId(id);
+        Categoria cat = b.buscarPorId(b.getCategorias(), id);
         if (cat == null) {
             System.out.println("Categoria não encontrada.");
             return;
@@ -523,12 +666,12 @@ public class Main {
     }
 
     private static void deletarItem(Bibliotecario b, Scanner sc) {
-        System.out.println("--- Lista de Itens ---");
-        b.listarItens();
+        System.out.println("--- LISTA DE ITENS ---");
+        b.listarRegistros(b.getItens());
         Integer id = lerInteiroCancelavel(sc, "Digite o ID do item a deletar (ou 'c' para cancelar): ");
         if (id == null) return;
 
-        Item item = b.buscarItemPorId(id);
+        Item item = b.buscarPorId(b.getItens(), id);
         if (item == null) {
             System.out.println("Item não encontrado.");
             return;
@@ -543,12 +686,12 @@ public class Main {
     }
 
     private static void deletarEvento(Bibliotecario b, Scanner sc) {
-        System.out.println("--- Lista de Eventos ---");
-        b.listarEventos();
+        System.out.println("--- LISTA DE EVENTOS ---");
+        b.listarRegistros(b.getEventos());
         Integer id = lerInteiroCancelavel(sc, "Digite o ID do evento a deletar (ou 'c' para cancelar): ");
         if (id == null) return;
 
-        Evento evento = b.buscarEventoPorId(id);
+        Evento evento = b.buscarPorId(b.getEventos(), id);
         if (evento == null) {
             System.out.println("Evento não encontrado.");
             return;
@@ -563,14 +706,14 @@ public class Main {
     }
 
 
-    // --- 5. LÓGICAS DE FLUXO (UI) ---
+    // --- LÓGICAS DE FLUXO ---
 
     private static Leitor autenticarLeitor(Bibliotecario b, Scanner sc) {
         System.out.println("--- Autenticação ---");
         Integer id = lerInteiroCancelavel(sc, "Digite o ID do Leitor (ou 'c' para cancelar): ");
         if (id == null) return null;
 
-        Leitor leitor = b.buscaID(id);
+        Leitor leitor = b.buscarPorId(b.getLeitores(), id);
         if (leitor == null) {
             System.out.println("Leitor não encontrado.");
             return null;
@@ -593,15 +736,15 @@ public class Main {
     private static Categoria selecionarOuCriarCategoria(Bibliotecario b, Scanner sc) {
         Categoria cat = null;
         while (cat == null) {
-            System.out.println("\n--- Selecione a Categoria ---");
-            b.listarCategorias();
+            System.out.println("\n--- SELECIONE A CATEGORIA ---");
+            b.listarRegistros(b.getCategorias());
             System.out.println("Digite o ID, '0' para CADASTRAR NOVA, ou 'c' para CANCELAR.");
             Integer idCat = lerInteiroCancelavel(sc, "Escolha: ");
             if (idCat == null) return null;
             if (idCat == 0) {
                 cadastrarNovaCategoria(b, sc);
             } else {
-                cat = b.buscarCategoriaPorId(idCat);
+                cat = b.buscarPorId(b.getCategorias(), idCat);;
                 if (cat == null) System.out.println("ID inválido.");
             }
         }
@@ -609,18 +752,57 @@ public class Main {
         return cat;
     }
 
+
+    private static Editora selecionarOuCriarEditora(Bibliotecario b, Scanner sc) {
+        Editora editora = null;
+        while (editora == null) {
+            System.out.println("\n--- SELECIONE A EDITORA ---");
+            b.listarRegistros(b.getEditoras());
+            System.out.println("Digite o ID, '0' para NOVA, ou 'c' para CANCELAR.");
+            Integer id = lerInteiroCancelavel(sc, "Escolha: ");
+            if (id == null) return null;
+            if (id == 0) {
+                System.out.print("Nome da Nova Editora: ");
+                b.cadastrarEditora(sc.nextLine());
+            } else {
+                editora = b.buscarPorId(b.getEditoras(), id);
+                if (editora == null) System.out.println("ID inválido.");
+            }
+        }
+        return editora;
+    }
+
+    private static Prateleira selecionarOuCriarPrateleira(Bibliotecario b, Scanner sc) {
+        Prateleira prat = null;
+        while (prat == null) {
+            System.out.println("\n--- SELECIONE A PRATELEIRA ---");
+            b.listarRegistros(b.getPrateleiras());
+            System.out.println("Digite o ID, '0' para NOVA, ou 'c' para CANCELAR.");
+            Integer id = lerInteiroCancelavel(sc, "Escolha: ");
+            if (id == null) return null;
+            if (id == 0) {
+                System.out.print("Localização da Nova Prateleira: ");
+                b.cadastrarPrateleira(sc.nextLine());
+            } else {
+                prat = b.buscarPorId(b.getPrateleiras(), id);
+                if (prat == null) System.out.println("ID inválido.");
+            }
+        }
+        return prat;
+    }
+
     private static Autor selecionarOuCriarAutor(Bibliotecario b, Scanner sc) {
         Autor autor = null;
         while (autor == null) {
-            System.out.println("\n--- Selecione o Autor ---");
-            b.listarAutores();
+            System.out.println("\n--- SELECIONE O AUTOR ---");
+            b.listarRegistros(b.getAutores());
             System.out.println("Digite o ID, '0' para CADASTRAR NOVO, ou 'c' para CANCELAR.");
             Integer idAut = lerInteiroCancelavel(sc, "Escolha: ");
             if (idAut == null) return null;
             if (idAut == 0) {
                 cadastrarNovoAutor(b, sc);
             } else {
-                autor = b.buscarAutorPorId(idAut);
+                autor = b.buscarPorId(b.getAutores(), idAut);
                 if (autor == null) System.out.println("ID inválido.");
             }
         }
@@ -641,8 +823,8 @@ public class Main {
             return;
         }
 
-        System.out.println("\n--- Selecione o Item ---");
-        b.listarItens();
+        System.out.println("\n--- SELECIONE O ITEM ---");
+        b.listarRegistros(b.getItens());
         Integer idItem = lerInteiroCancelavel(sc, "Digite o ID do item a emprestar (ou 'c' para cancelar): ");
         if (idItem == null) {
             System.out.println("Operação cancelada.");
@@ -656,7 +838,7 @@ public class Main {
             return;
         }
 
-        Item item = b.buscarItemPorId(idItem);
+        Item item = b.buscarPorId(b.getItens(), idItem);;
         if (item == null || !item.isDisponivel()) {
             System.out.println("Item inválido ou indisponível.");
             return;
@@ -740,7 +922,7 @@ public class Main {
     }
 
 
-    // --- 6. MÉTODOS UTILITÁRIOS DA UI ---
+    // --- MÉTODOS UTILITÁRIOS ---
 
     private static int lerOpcao(Scanner sc, int min, int max) {
         int opcao;
