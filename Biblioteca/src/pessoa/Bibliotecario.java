@@ -186,11 +186,10 @@ public class Bibliotecario extends Pessoa {
             case 2 -> item.setQuantidadeExemplares(Integer.parseInt(valor));
             case 3 -> item.setCategoria((Categoria) obj);
             case 4 -> {
-                // Opção 4: Autor (para Livro) ou Editora (para Revista)
                 if (item instanceof Livro livro) {
                     livro.setAutor((Autor) obj);
                 } else if (item instanceof Revista revista) {
-                    revista.setEditora((Editora) obj); // <--- MUDANÇA AQUI
+                    revista.setEditora((Editora) obj);
                 }
             }
             case 5 -> item.setPrateleira((Prateleira) obj);
@@ -216,7 +215,7 @@ public class Bibliotecario extends Pessoa {
         System.out.println("Item deletado com sucesso.");
     }
 
-    // --- MÉTODOS DE LÓGICA DE NEGÓCIO (Empréstimo/Devolução) ---
+    // --- MÉTODOS DE LÓGICA DE NEGÓCIO ---
 
     public void realizarEmprestimo(Leitor leitor, Item item, String dataPrevista) {
         Emprestimo emp = new Emprestimo(leitor, item, dataPrevista);
@@ -300,7 +299,7 @@ public class Bibliotecario extends Pessoa {
     }
 
     public void deletarEditora(Editora e) {
-        editoras.remove(e); // Futuramente verificar dependencia com Revista
+        editoras.remove(e);
         System.out.println("Editora removida.");
         salvarDados();
     }
@@ -325,7 +324,7 @@ public class Bibliotecario extends Pessoa {
         salvarDados();
     }
 
-    // ---------------------- LISTAR GENERICO ------------------------
+    // --- LISTAR GENERICO ---
     public void listarRegistros(ArrayList<? extends util.Exibivel> lista) {
         if (lista.isEmpty()) {
             System.out.println("Nenhum registro encontrado.");
@@ -431,7 +430,7 @@ public class Bibliotecario extends Pessoa {
         }
     }
 
-    // --- GETTERS (Para a Main usar) ---
+    // --- GETTERS ---
     public ArrayList<Leitor> getLeitores() { return leitores; }
     public ArrayList<Autor> getAutores() { return autores; }
     public ArrayList<Categoria> getCategorias() { return categorias; }
@@ -451,9 +450,7 @@ public class Bibliotecario extends Pessoa {
         return null;
     }
 
-    // =============================================================
-    //       GERENCIAMENTO DE CONFIGURAÇÃO (PREFERÊNCIAS)
-    // =============================================================
+    // --- GERENCIAMENTO DE CONFIGURAÇÃO ---
 
     public Configuracao getConfig() {
         return config;
@@ -462,7 +459,7 @@ public class Bibliotecario extends Pessoa {
     public void atualizarConfig(String novoNome, String novoTema) {
         config.setNomeExibicao(novoNome);
         config.setTema(novoTema);
-        salvarConfig(); // Salva imediatamente em arquivo separado
+        salvarConfig();
     }
 
     public void salvarConfig() {
@@ -475,7 +472,7 @@ public class Bibliotecario extends Pessoa {
 
     public void carregarConfig() {
         File arquivo = new File("config.dat");
-        if (!arquivo.exists()) return; // Se não existe, usa o padrão (criado no construtor)
+        if (!arquivo.exists()) return;
 
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(arquivo))) {
             this.config = (Configuracao) ois.readObject();

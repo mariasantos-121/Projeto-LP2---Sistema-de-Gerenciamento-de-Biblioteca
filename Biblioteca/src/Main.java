@@ -2,14 +2,11 @@ import item.*;
 import pessoa.*;
 import emprestimo.Emprestimo;
 import evento.Evento;
-import util.Configuracao;
 import java.util.Scanner;
 import java.util.ArrayList;
 import static util.ConsoleUI.*;
 
 public class Main {
-
-    // --- PONTO DE ENTRADA E MENU PRINCIPAL ---
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
@@ -24,7 +21,7 @@ public class Main {
             opcao = lerOpcao(sc, 0, 10);
 
             switch (opcao) {
-                // --- MENUS GENÉRICOS (Padronizados) ---
+                // --- MENUS GENÉRICOS  ---
                 case 1 -> menuEntidade(b, sc, "LEITORES");
                 case 4 -> menuEntidade(b, sc, "AUTORES");
                 case 5 -> menuEntidade(b, sc, "CATEGORIAS");
@@ -32,7 +29,7 @@ public class Main {
                 case 7 -> menuEntidade(b, sc, "EDITORAS");
                 case 8 -> menuEntidade(b, sc, "PRATELEIRAS");
 
-                // --- MENUS ESPECÍFICOS (Lógica Complexa) ---
+                // --- MENUS ESPECÍFICOS ---
                 case 2 -> menuItens(b, sc);
                 case 3 -> menuEmprestimos(b, sc);
 
@@ -47,9 +44,7 @@ public class Main {
         sc.close();
     }
 
-    // ==================================================================================
-    // 2. SISTEMA DE MENUS GENÉRICO (A "Faxina")
-    // ==================================================================================
+    // --- SISTEMAS DE MENU GENERICO ---
 
     private static void menuEntidade(Bibliotecario b, Scanner sc, String tipo) {
         int op;
@@ -107,7 +102,7 @@ public class Main {
     }
 
     private static void rotearEdicao(Bibliotecario b, Scanner sc, String tipo) {
-        rotearListagem(b, tipo); // Mostra a lista antes
+        rotearListagem(b, tipo);
         switch (tipo) {
             case "LEITORES" -> editarLeitor(b, sc);
             case "AUTORES" -> editarAutor(b, sc);
@@ -156,9 +151,7 @@ public class Main {
         }
     }
 
-    // ==================================================================================
-    // 3. MENUS ESPECÍFICOS (Itens e Empréstimos)
-    // ==================================================================================
+    // MENUS ESPECÍFICOS
 
     private static void menuItens(Bibliotecario b, Scanner sc) {
         int op;
@@ -199,7 +192,7 @@ public class Main {
                 case 1 -> realizarNovoEmprestimo(b, sc);
                 case 2 -> {
                     System.out.println("--- LISTA DE EMPRESTIMOS ---");
-                    b.listarRegistros(b.getEmprestimos()); // Emprestimo precisa ser Exibivel
+                    b.listarRegistros(b.getEmprestimos());
                 }
                 case 3 -> realizarNovaDevolucao(b, sc);
                 case 4 -> renovarEmprestimo(b, sc);
@@ -208,9 +201,7 @@ public class Main {
         } while (op != 0);
     }
 
-    // ==================================================================================
-    // 4. LÓGICAS DE CADASTRO (UI)
-    // ==================================================================================
+    // --- LÓGICAS DE CADASTRO  ---
 
     private static void cadastrarNovoLeitor(Bibliotecario b, Scanner sc) {
         System.out.print("Nome (ou 'c' para cancelar): ");
@@ -221,7 +212,6 @@ public class Main {
             System.out.print("CPF (ou 'c' para cancelar): ");
             String cpf = sc.nextLine();
             if (checkCancel(cpf)) return;
-            // Tratamento de Exceção (Req 6.b) - Bibliotecario retorna false se falhar validação
             if (b.cadLeitor(nome, cpf)) break;
             else System.out.println("Tente novamente.");
         }
@@ -454,9 +444,7 @@ public class Main {
         }
     }
 
-    // ==================================================================================
-    // 7. LÓGICAS DE DELEÇÃO
-    // ==================================================================================
+    // --- LÓGICAS DE DELEÇÃO ---
 
     private static void deletarLeitor(Bibliotecario b, Scanner sc) {
         Integer id = lerInteiroCancelavel(sc, "ID do leitor: ");
@@ -495,15 +483,12 @@ public class Main {
         if (e != null && confirmar(sc)) b.deletarEvento(e);
     }
 
-    // ==================================================================================
-    // 8. LÓGICAS DE EMPRÉSTIMO
-    // ==================================================================================
+    // --- LÓGICAS DE EMPRÉSTIMO ---
 
     private static void realizarNovoEmprestimo(Bibliotecario b, Scanner sc) {
         Leitor leitor = autenticarLeitor(b, sc);
         if (leitor == null) return;
 
-        // Verifica limite (Regra de Negócio na Main apenas para UI, validação final no controller seria ideal)
         if (b.getEmprestimosAtivos(leitor).size() >= 3) {
             System.out.println("Leitor já possui 3 empréstimos ativos.");
             return;
@@ -534,7 +519,6 @@ public class Main {
         ArrayList<Emprestimo> ativos = b.getEmprestimosAtivos(leitor);
         if (ativos.isEmpty()) { System.out.println("Sem empréstimos ativos."); return; }
 
-        // Como Emprestimo não é 'Exibivel' genericamente, usamos o loop manual aqui ou tornamos Exibivel
         for (Emprestimo e : ativos) e.exibirInfo();
 
         Integer idEmp = lerInteiroCancelavel(sc, "ID do empréstimo: ");
@@ -582,9 +566,7 @@ public class Main {
         }
     }
 
-    // ==================================================================================
-    // 9. CONFIGURAÇÃO E UTILITÁRIOS
-    // ==================================================================================
+    // --- CONFIGURAÇÃO ---
 
     private static void menuConfiguracao(Bibliotecario b, Scanner sc) {
         System.out.println("\n--- CONFIGURAÇÕES ---");
