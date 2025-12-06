@@ -23,19 +23,15 @@ public class Evento implements Serializable, Identificavel, Exibivel {
 
     @Override
     public String getNome() {return nome;}
-
     public void setNome(String nome) {this.nome = nome;}
 
     public String getData() {return data;}
-
     public void setData(String data) {this.data = data;}
 
     public String getLocal() {return local;}
-
     public void setLocal(String local) {this.local = local;}
 
     public static int getContadorID() {return contadorID;}
-
     public static void setContadorID(int c) {contadorID = c;}
 
     @Override

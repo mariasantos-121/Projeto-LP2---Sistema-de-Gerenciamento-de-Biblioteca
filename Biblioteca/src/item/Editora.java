@@ -15,23 +15,19 @@ public class Editora implements Serializable, Identificavel, Exibivel {
         this.nome = nome;
     }
 
-    // --- Interfaces ---
     @Override
     public int getId() { return id; }
 
     @Override
     public String getNome() { return nome; }
+    public void setNome(String nome) {this.nome = nome;}
+
+    public static int getContadorID() { return contadorID; }
+    public static void setContadorID(int c) { contadorID = c; }
 
     @Override
     public void exibirInfo() {
         System.out.println("ID: " + id + " | Editora: " + nome);
     }
-    // ------------------
 
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public static int getContadorID() { return contadorID; }
-    public static void setContadorID(int c) { contadorID = c; }
 }

@@ -24,27 +24,16 @@ public class Emprestimo implements Serializable, Identificavel, Exibivel {
     }
 
     public static int getContadorID() {return contadorID;}
-
-    public static void setContadorID(int c) {
-        contadorID = c;
-    }
+    public static void setContadorID(int c) {contadorID = c;}
 
     @Override
-    public int getId() {
-        return id;
-    }
+    public int getId() {return id;}
 
-    public Leitor getLeitor() {
-        return leitor;
-    }
+    public Leitor getLeitor() {return leitor;}
 
-    public Item getItem() {
-        return item;
-    }
+    public Item getItem() {return item;}
 
-    public boolean isDevolvido() {
-        return devolvido;
-    }
+    public boolean isDevolvido() {return devolvido;}
 
     public void devolver() {
         if (!devolvido) {
@@ -57,13 +46,10 @@ public class Emprestimo implements Serializable, Identificavel, Exibivel {
     }
 
     public String getDataPrevista() {return dataPrevista;}
-
     public void setDataPrevista(String dataPrevista) {this.dataPrevista = dataPrevista;}
 
     @Override
-    public String getNome() {
-        return "Empréstimo #" + id + " (" + item.getTitulo() + ")";
-    }
+    public String getNome() {return "Empréstimo #" + id + " (" + item.getTitulo() + ")";}
 
     @Override
     public void exibirInfo() {
