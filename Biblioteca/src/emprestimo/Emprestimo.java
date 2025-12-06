@@ -2,8 +2,10 @@ package emprestimo;
 import java.io.Serializable;
 import item.Item;
 import pessoa.Leitor;
+import util.Identificavel;
+import util.Exibivel;
 
-public class Emprestimo implements Serializable{
+public class Emprestimo implements Serializable, Identificavel, Exibivel {
     private static int contadorID = 0;
     private final int id;
     private Leitor leitor;
@@ -22,26 +24,16 @@ public class Emprestimo implements Serializable{
     }
 
     public static int getContadorID() {return contadorID;}
+    public static void setContadorID(int c) {contadorID = c;}
 
-    public static void setContadorID(int c) {
-        contadorID = c;
-    }
+    @Override
+    public int getId() {return id;}
 
-    public int getId() {
-        return id;
-    }
+    public Leitor getLeitor() {return leitor;}
 
-    public Leitor getLeitor() {
-        return leitor;
-    }
+    public Item getItem() {return item;}
 
-    public Item getItem() {
-        return item;
-    }
-
-    public boolean isDevolvido() {
-        return devolvido;
-    }
+    public boolean isDevolvido() {return devolvido;}
 
     public void devolver() {
         if (!devolvido) {
@@ -54,9 +46,12 @@ public class Emprestimo implements Serializable{
     }
 
     public String getDataPrevista() {return dataPrevista;}
-
     public void setDataPrevista(String dataPrevista) {this.dataPrevista = dataPrevista;}
 
+    @Override
+    public String getNome() {return "Empréstimo #" + id + " (" + item.getTitulo() + ")";}
+
+    @Override
     public void exibirInfo() {
         System.out.println(
                 "Empréstimo ID: " + id +
