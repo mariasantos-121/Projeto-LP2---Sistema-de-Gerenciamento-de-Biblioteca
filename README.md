@@ -14,7 +14,11 @@ Empréstimos: Realizar empréstimos, Listar emprestimo, Realizar devolução, Re
 
 Eventos: Cadastrar, Listar, Editar e Deletar.
 
-Sistema: Os dados são salvos e carregados automaticamente. Há uma opção para resetar todos os dados.
+Editora: Cadastrar, Listar, Editar e Deletar.
+
+Prateleira: Cadastrar, Listar, Editar e Deletar.
+
+Sistema: Os dados são salvos e carregados automaticamente. Há uma opção para resetar todos os dados, Além disso o sistema é capaz de salvar as preferências do usuário, como: "tema: escuro".
 
 ## Como Rodar
 ### 1. Via IDE (Recomendado)
