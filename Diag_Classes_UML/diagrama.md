@@ -1,120 +1,181 @@
 classDiagram
-    %% --- Interface de Persistência ---
+    direction TB
+
+    %% --- INTERFACES ---
     class Serializable {
         <<Interface>>
     }
+    class Identificavel {
+        <<Interface>>
+        +getId() int
+        +getNome() String
+    }
+    class Exibivel {
+        <<Interface>>
+        +exibirInfo() void
+    }
 
-    %% --- Hierarquia Pessoa ---
+    %% --- CLASSES DE SUPORTE ---
+    class Main {
+        <<View>>
+        +main(args)
+        -menuEntidade()
+        -rotearCadastro()
+    }
+    
+    class ConsoleUI {
+        <<Utility>>
+        +lerOpcao()
+        +exibirCabecalho()
+    }
+
+    class Configuracao {
+        -nomeExibicao: String
+        -tema: String
+    }
+    Serializable <|.. Configuracao
+
+    %% --- HIERARQUIA PESSOA ---
     class Pessoa {
         <<Abstract>>
         -id: int
         -nome: String
-        +getId(): int
-        +getNome(): String
-        +setNome(String): void
-        +exibirInfo()*: void
     }
     Serializable <|.. Pessoa
+    Identificavel <|.. Pessoa
+    Exibivel <|.. Pessoa
 
     class Leitor {
         -cpf: String
-        +getCpf(): String
-        +setCpf(String): void
-        +exibirInfo(): void
+        -contadorLeitor: int
     }
     Pessoa <|-- Leitor
 
     class Bibliotecario {
-        %% Classe de Controle, herda ID e Nome
-        %% Não possui atributos de dados próprios
-        +exibirInfo(): void
+        <<Controller>>
+        -leitores: List
+        -itens: List
+        -emprestimos: List
+        -autores: List
+        -categorias: List
+        -eventos: List
+        -editoras: List
+        -prateleiras: List
+        -config: Configuracao
+        +listarRegistros(lista)
+        +buscarPorId(lista, id)
+        +cadastrarEditora()
+        +cadastrarPrateleira()
+        +realizarEmprestimo()
+        +salvarDados()
+        +carregarDados()
     }
     Pessoa <|-- Bibliotecario
 
-    class Autor {
-        -id: int
-        -nome: String
-        +getId(): int
-        +getNome(): String
-        +setNome(String): void
-    }
-    Serializable <|.. Autor
-
-    %% --- Hierarquia Item ---
+    %% --- HIERARQUIA ITEM ---
     class Item {
         <<Abstract>>
         -id: int
         -titulo: String
-        -quantidadeExemplares: int
-        -disponivel: boolean
+        -qtd: int
         -categoria: Categoria
-        +getId(): int
-        +getTitulo(): String
-        +setTitulo(String): void
-        +getQuantidadeExemplares(): int
-        +setQuantidadeExemplares(int): void
-        +isDisponivel(): boolean
-        +getCategoria(): Categoria
-        +setCategoria(Categoria): void
-        +exibirInfo()*: void
+        -prateleira: Prateleira
     }
     Serializable <|.. Item
+    Identificavel <|.. Item
+    Exibivel <|.. Item
 
     class Livro {
         -autor: Autor
-        +getAutor(): Autor
-        +setAutor(Autor): void
-        +exibirInfo(): void
+        -editora: Editora
     }
     Item <|-- Livro
 
     class Revista {
-        -editora: String
-        +getEditora(): String
-        +setEditora(String): void
-        +exibirInfo(): void
+        -editora: Editora
     }
     Item <|-- Revista
+
+    %% --- ENTIDADES INDEPENDENTES ---
+    class Autor {
+        -id: int
+        -nome: String
+    }
+    Serializable <|.. Autor
+    Identificavel <|.. Autor
+    Exibivel <|.. Autor
 
     class Categoria {
         -id: int
         -nome: String
-        +getId(): int
-        +getNome(): String
-        +setNome(String): void
     }
     Serializable <|.. Categoria
-
-    %% --- Entidades Independentes ---
-    class Emprestimo {
-        -id: int
-        -leitor: Leitor
-        -item: Item
-        -devolvido: boolean
-        -dataPrevista: String
-        +getId(): int
-        +getLeitor(): Leitor
-        +getItem(): Item
-        +isDevolvido(): boolean
-        +getDataPrevista(): String
-        +setDataPrevista(String): void
-        +devolver(): void
-        +exibirInfo(): void
-    }
-    Serializable <|.. Emprestimo
+    Identificavel <|.. Categoria
+    Exibivel <|.. Categoria
 
     class Evento {
         -id: int
         -nome: String
         -data: String
         -local: String
-        +getId(): int
-        +getNome(): String
-        +setNome(String): void
-        +getData(): String
-        +setData(String): void
-        +getLocal(): String
-        +setLocal(String): void
-        +exibirInfo(): void
     }
     Serializable <|.. Evento
+    Identificavel <|.. Evento
+    Exibivel <|.. Evento
+
+    class Editora {
+        -id: int
+        -nome: String
+    }
+    Serializable <|.. Editora
+    Identificavel <|.. Editora
+    Exibivel <|.. Editora
+
+    class Prateleira {
+        -id: int
+        -localizacao: String
+    }
+    Serializable <|.. Prateleira
+    Identificavel <|.. Prateleira
+    Exibivel <|.. Prateleira
+
+    class Emprestimo {
+        -id: int
+        -leitor: Leitor
+        -item: Item
+        -dataPrevista: String
+        -devolvido: boolean
+        +devolver()
+        +renovar()
+    }
+    Serializable <|.. Emprestimo
+    Identificavel <|.. Emprestimo
+    Exibivel <|.. Emprestimo
+
+    %% --- RELACIONAMENTOS ---
+    
+    %% Main usa Bibliotecario e ConsoleUI
+    Main ..> Bibliotecario : usa
+    Main ..> ConsoleUI : usa
+
+    %% Bibliotecario compõe todas as listas
+    Bibliotecario *-- Leitor
+    Bibliotecario *-- Item
+    Bibliotecario *-- Emprestimo
+    Bibliotecario *-- Autor
+    Bibliotecario *-- Categoria
+    Bibliotecario *-- Evento
+    Bibliotecario *-- Editora
+    Bibliotecario *-- Prateleira
+    Bibliotecario --> Configuracao : gerencia
+
+    %% Associações de Item
+    Item --> Categoria : tem
+    Item --> Prateleira : tem
+    Livro --> Autor : tem
+    Livro --> Editora : tem
+    Revista --> Editora : tem
+
+    %% Associações de Empréstimo
+    Emprestimo --> Leitor : referente a
+    Emprestimo --> Item : referente a
