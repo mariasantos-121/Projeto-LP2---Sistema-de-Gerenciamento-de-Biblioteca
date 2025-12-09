@@ -1,181 +1,113 @@
 classDiagram
-    direction TB
+    direction LR
 
-    %% --- INTERFACES ---
-    class Serializable {
-        <<Interface>>
-    }
-    class Identificavel {
-        <<Interface>>
-        +getId() int
-        +getNome() String
-    }
-    class Exibivel {
-        <<Interface>>
-        +exibirInfo() void
-    }
-
-    %% --- CLASSES DE SUPORTE ---
-    class Main {
-        <<View>>
-        +main(args)
-        -menuEntidade()
-        -rotearCadastro()
-    }
-    
-    class ConsoleUI {
-        <<Utility>>
-        +lerOpcao()
-        +exibirCabecalho()
-    }
-
-    class Configuracao {
-        -nomeExibicao: String
-        -tema: String
-    }
-    Serializable <|.. Configuracao
-
-    %% --- HIERARQUIA PESSOA ---
     class Pessoa {
-        <<Abstract>>
-        -id: int
-        -nome: String
+        - String nome
     }
-    Serializable <|.. Pessoa
-    Identificavel <|.. Pessoa
-    Exibivel <|.. Pessoa
 
     class Leitor {
-        -cpf: String
-        -contadorLeitor: int
+        - String cpf
     }
-    Pessoa <|-- Leitor
+
+    class Autor {
+        - String nome
+        - String nacionalidade
+    }
 
     class Bibliotecario {
-        <<Controller>>
-        -leitores: List
-        -itens: List
-        -emprestimos: List
-        -autores: List
-        -categorias: List
-        -eventos: List
-        -editoras: List
-        -prateleiras: List
-        -config: Configuracao
-        +listarRegistros(lista)
-        +buscarPorId(lista, id)
-        +cadastrarEditora()
-        +cadastrarPrateleira()
-        +realizarEmprestimo()
-        +salvarDados()
-        +carregarDados()
+        - Configuracao config
+        - ArrayList~Leitor~ leitores
+        - ArrayList~Autor~ autores
+        - ArrayList~Categoria~ categorias
+        - ArrayList~Item~ itens
+        - ArrayList~Emprestimo~ emprestimos
+        - ArrayList~Evento~ eventos
+        - ArrayList~Editora~ editoras
+        - ArrayList~Prateleira~ prateleiras
     }
+
+    Pessoa <|-- Leitor
     Pessoa <|-- Bibliotecario
 
-    %% --- HIERARQUIA ITEM ---
+
+%% ---------------------
+%% ITENS
+%% ---------------------
+
     class Item {
-        <<Abstract>>
-        -id: int
-        -titulo: String
-        -qtd: int
-        -categoria: Categoria
-        -prateleira: Prateleira
+        - String titulo
+        - boolean disponivel
     }
-    Serializable <|.. Item
-    Identificavel <|.. Item
-    Exibivel <|.. Item
 
     class Livro {
-        -autor: Autor
-        -editora: Editora
+        - Autor autor
     }
-    Item <|-- Livro
 
     class Revista {
-        -editora: Editora
+        - Editora editora
     }
-    Item <|-- Revista
-
-    %% --- ENTIDADES INDEPENDENTES ---
-    class Autor {
-        -id: int
-        -nome: String
-    }
-    Serializable <|.. Autor
-    Identificavel <|.. Autor
-    Exibivel <|.. Autor
 
     class Categoria {
-        -id: int
-        -nome: String
+        - String nome
     }
-    Serializable <|.. Categoria
-    Identificavel <|.. Categoria
-    Exibivel <|.. Categoria
-
-    class Evento {
-        -id: int
-        -nome: String
-        -data: String
-        -local: String
-    }
-    Serializable <|.. Evento
-    Identificavel <|.. Evento
-    Exibivel <|.. Evento
 
     class Editora {
-        -id: int
-        -nome: String
+        - String nome
     }
-    Serializable <|.. Editora
-    Identificavel <|.. Editora
-    Exibivel <|.. Editora
 
     class Prateleira {
-        -id: int
-        -localizacao: String
+        - String identificacao
+        - Categoria categoria
     }
-    Serializable <|.. Prateleira
-    Identificavel <|.. Prateleira
-    Exibivel <|.. Prateleira
+
+    Item <|-- Livro
+    Item <|-- Revista
+    Livro --> Autor
+    Revista --> Editora
+    Item --> Categoria
+    Prateleira --> Categoria
+
+
+%% ---------------------
+%% EMPRESTIMO / EVENTO
+%% ---------------------
 
     class Emprestimo {
-        -id: int
-        -leitor: Leitor
-        -item: Item
-        -dataPrevista: String
-        -devolvido: boolean
-        +devolver()
-        +renovar()
+        - Leitor leitor
+        - Item item
+        - boolean devolvido
+        - String dataPrevista
     }
-    Serializable <|.. Emprestimo
-    Identificavel <|.. Emprestimo
-    Exibivel <|.. Emprestimo
 
-    %% --- RELACIONAMENTOS ---
-    
-    %% Main usa Bibliotecario e ConsoleUI
-    Main ..> Bibliotecario : usa
-    Main ..> ConsoleUI : usa
+    class Evento {
+        - String nome
+        - String data
+        - String local
+    }
 
-    %% Bibliotecario compõe todas as listas
-    Bibliotecario *-- Leitor
-    Bibliotecario *-- Item
-    Bibliotecario *-- Emprestimo
-    Bibliotecario *-- Autor
-    Bibliotecario *-- Categoria
-    Bibliotecario *-- Evento
-    Bibliotecario *-- Editora
-    Bibliotecario *-- Prateleira
-    Bibliotecario --> Configuracao : gerencia
+    Emprestimo --> Item
+    Emprestimo --> Leitor
+    Bibliotecario --> Emprestimo
+    Bibliotecario --> Evento
 
-    %% Associações de Item
-    Item --> Categoria : tem
-    Item --> Prateleira : tem
-    Livro --> Autor : tem
-    Livro --> Editora : tem
-    Revista --> Editora : tem
 
-    %% Associações de Empréstimo
-    Emprestimo --> Leitor : referente a
-    Emprestimo --> Item : referente a
+%% ---------------------
+%% CONFIG / MAIN / UI
+%% ---------------------
+
+    class Configuracao {
+        - String nomeExibicao
+        - String tema
+    }
+
+    class ConsoleUI {
+
+    }
+
+    class Main {
+
+    }
+
+    Bibliotecario --> Configuracao
+    Main --> ConsoleUI
+    ConsoleUI --> Bibliotecario
