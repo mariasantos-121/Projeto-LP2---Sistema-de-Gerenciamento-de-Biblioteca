@@ -30,10 +30,6 @@ classDiagram
     Pessoa <|-- Bibliotecario
 
 
-%% ---------------------
-%% ITENS
-%% ---------------------
-
     class Item {
         - String titulo
         - boolean disponivel
@@ -67,11 +63,6 @@ classDiagram
     Item --> Categoria
     Prateleira --> Categoria
 
-
-%% ---------------------
-%% EMPRESTIMO / EVENTO
-%% ---------------------
-
     class Emprestimo {
         - Leitor leitor
         - Item item
@@ -89,11 +80,6 @@ classDiagram
     Emprestimo --> Leitor
     Bibliotecario --> Emprestimo
     Bibliotecario --> Evento
-
-
-%% ---------------------
-%% CONFIG / MAIN / UI
-%% ---------------------
 
     class Configuracao {
         - String nomeExibicao
