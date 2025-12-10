@@ -23,9 +23,9 @@ public class Livro extends Item {
         System.out.println(
                 "ID: " + getId() + " | Livro: " + getTitulo() +
                         " | Autor: " + autor.getNome() +
-                        " | Editora: " + editora.getNome() + // MOSTRAR
+                        " | Editora: " + editora.getNome() +
                         " | Categoria: " + getCategoria().getNome() +
-                        " | Local: " + getPrateleira().getNome() + // MOSTRAR
+                        " | Local: " + getPrateleira().getNome() +
                         " | Qtd: " + getQuantidadeExemplares() +
                         " | Disp: " + (isDisponivel() ? "Sim" : "Não")
         );
