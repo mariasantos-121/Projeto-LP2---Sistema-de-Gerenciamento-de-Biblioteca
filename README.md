@@ -10,9 +10,15 @@ Categorias: Cadastrar, Listar, Editar e Deletar.
 
 Itens (Livros/Revistas): Cadastrar (com opção de criar autor/categoria na hora), Listar, Editar e Deletar.
 
-Empréstimos: Realizar empréstimos (com autenticação de leitor) e devoluções.
+Empréstimos: Realizar empréstimos, Listar emprestimo, Realizar devolução, Renovar emprestimo.
 
-Sistema: Os dados são salvos e carregados automaticamente. Há uma opção para resetar todos os dados.
+Eventos: Cadastrar, Listar, Editar e Deletar.
+
+Editora: Cadastrar, Listar, Editar e Deletar.
+
+Prateleira: Cadastrar, Listar, Editar e Deletar.
+
+Sistema: Os dados são salvos e carregados automaticamente. Há uma opção para resetar todos os dados, Além disso o sistema é capaz de salvar as preferências do usuário, como: "tema: escuro".
 
 ## Como Rodar
 ### 1. Via IDE (Recomendado)
