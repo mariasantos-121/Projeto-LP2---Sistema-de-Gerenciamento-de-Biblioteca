@@ -3,10 +3,9 @@ import java.io.Serializable;
 
 public class Configuracao implements Serializable {
     private String nomeExibicao;
-    private String tema; // "CLARO" ou "ESCURO"
+    private String tema;
 
     public Configuracao() {
-        // Valores padrão (para a primeira vez que rodar)
         this.nomeExibicao = "Administrador";
         this.tema = "CLARO";
     }

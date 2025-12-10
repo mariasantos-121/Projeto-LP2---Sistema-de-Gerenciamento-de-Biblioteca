@@ -1,8 +1,8 @@
 package pessoa;
 
 import java.io.Serializable;
-import util.Identificavel; // Importar
-import util.Exibivel;      // Importar
+import util.Identificavel;
+import util.Exibivel;
 
 public class Autor implements Serializable, Identificavel, Exibivel {
 
@@ -11,11 +11,10 @@ public class Autor implements Serializable, Identificavel, Exibivel {
     private String nome;
 
     public Autor(String nome) {
-        this.id = ++contadorID; // Começa de 1
+        this.id = ++contadorID;
         this.nome = nome;
     }
 
-    // --- Implementação de Identificavel ---
     @Override
     public int getId() {
         return id;
@@ -25,7 +24,6 @@ public class Autor implements Serializable, Identificavel, Exibivel {
     public String getNome() {
         return nome;
     }
-    // --------------------------------------
 
     public void setNome(String nome) {
         this.nome = nome;
@@ -39,7 +37,6 @@ public class Autor implements Serializable, Identificavel, Exibivel {
         contadorID = c;
     }
 
-    // --- Implementação de Exibivel (O que você pediu) ---
     @Override
     public void exibirInfo() {
         System.out.println("ID: " + id + " | Autor: " + nome);
